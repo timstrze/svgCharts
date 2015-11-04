@@ -2,8 +2,18 @@
   "name": "svg-charts",
   "version": "0.0.0",
   "dependencies": {
-    "angular": "^1.3.0",
-    "angular-animate": "^1.3.0"
+    "angular": "latest",
+    "angular-animate": "latest",
+    "angular-cookies": "latest",
+    "angular-resource": "latest",
+    "angular-route": "latest",
+    "angular-sanitize": "latest",
+    "angular-touch": "latest",
+    "angular-material": "latest",
+    "ng-messages": "latest",
+    "d3": "~3.5.6",
+    "angular-local-storage": "latest",
+    "angular-material-icons": "latest"
   },
   "devDependencies": {
     "angular-mocks": "^1.3.0"
