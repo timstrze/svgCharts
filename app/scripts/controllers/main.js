@@ -7,8 +7,8 @@
  * # MainController
  * Controller of the svgChartsApp
  */
-angular.module('stockTrackAngularJsApp')
-  .controller('MainController', function ($scope) {
+angular.module('svgChartsApp')
+  .controller('MainController', function ($scope, $http) {
 
 
     /**
@@ -24,7 +24,14 @@ angular.module('stockTrackAngularJsApp')
      */
     $scope.init = function () {
       // Alerts the user
-      alert(1);
+      //alert(1);
+      $scope.symbol = {};
+      $scope.selectedChart = 'line-chart';
+      $scope.selectedExtras = [];
+
+      $http.get('json/historical-data.json').then(function(results) {
+        $scope.symbol.historicalData = results.data.query.results.quote;
+      });
     };
 
 
@@ -44,11 +51,11 @@ angular.module('stockTrackAngularJsApp')
      */
     $scope.clickButton = function (event) {
       // Alerts the user
-      alert(1);
+      //alert(1);
       return event;
     };
 
-    
+
 
     /**
      * @ngdoc function
@@ -93,4 +100,4 @@ angular.module('stockTrackAngularJsApp')
      */
     $scope.init();
 
-  });  
+  });
