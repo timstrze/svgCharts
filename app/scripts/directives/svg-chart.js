@@ -2,8 +2,8 @@
 
 /**
  * @ngdoc directive
- * @name svgChartsApp.directive:base-chart
- * @element base-chart
+ * @name svgChartsApp.directive:svg-chart
+ * @element svg-chart
  * @restrict E
  *
  * @description
@@ -16,7 +16,7 @@
 /*global d3 */
 
 angular.module('svgChartsApp')
-  .directive('baseChart', function ($window, $mdMedia, LineChart, OHLCChart) {
+  .directive('svgChart', function ($window, $mdMedia, LineChart, OHLCChart) {
     return {
       scope: {
         symbol: '=',
@@ -24,14 +24,14 @@ angular.module('svgChartsApp')
         selectedChart: '=',
         positions: '='
       },
-      template: '<svg class="base-chart"><g name="svgContent" class="svg-content"></g></svg>',
+      template: '<svg class="svg-chart"><g name="svgContent" class="svg-chart-content"></g></svg>',
       link: function postLink($scope, element) {
 
-        $scope.svg = d3.select(element[0].querySelector('.base-chart'))
-          .attr('name', 'baseChart')
+        $scope.svg = d3.select(element[0].querySelector('.svg-chart'))
+          .attr('name', 'svgChart')
           .attr('style', 'background-color:#fff');
 
-        $scope.svgContent = $scope.svg.selectAll(".svg-content");
+        $scope.svgContent = $scope.svg.selectAll(".svg-chart-content");
 
         //$scope.chartPositions = $scope.svgContent.append('path').attr('name', 'chartPositions');
 
