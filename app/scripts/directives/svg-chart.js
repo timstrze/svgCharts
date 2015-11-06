@@ -31,6 +31,7 @@ angular.module('svgChartsApp')
           .attr('name', 'svgChart')
           .attr('style', 'background-color:#fff');
 
+
         $scope.svgContent = $scope.svg.selectAll(".svg-chart-content");
 
         //$scope.chartPositions = $scope.svgContent.append('path').attr('name', 'chartPositions');
@@ -75,7 +76,7 @@ angular.module('svgChartsApp')
           .attr('style', 'stroke: #FF9900; fill: none;');
 
         $scope.xAxis = $scope.svgContent.append('g').attr('name', 'xAxis');
-          //.attr('style', 'fill: none;stroke: rgba(0,0,0,0.54);shape-rendering: crispEdges;');
+        //.attr('style', 'fill: none;stroke: rgba(0,0,0,0.54);shape-rendering: crispEdges;');
 
         $scope.yAxis = $scope.svgContent.append('g').attr('name', 'yAxis');
           //.attr('style', 'fill: none;stroke: rgba(0,0,0,0.54);shape-rendering: crispEdges;');
@@ -378,6 +379,10 @@ angular.module('svgChartsApp')
             });
 
           verticalGridLine.exit().remove();
+
+          $scope.xAxis.selectAll('text').attr('style', 'fill:black; stroke: 0px;');
+          $scope.yAxis.selectAll('text').attr('style', 'fill:black; stroke: 0px;');
+
 
 
 

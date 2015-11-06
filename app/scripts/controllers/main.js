@@ -26,7 +26,7 @@ angular.module('svgChartsApp')
       // Alerts the user
       //alert(1);
       $scope.symbol = {};
-      $scope.selectedChart = 'line-chart';
+      $scope.selectedChart = 'candlestick-chart';
       $scope.selectedExtras = [];
 
       $http.get('json/historical-data.json').then(function(results) {

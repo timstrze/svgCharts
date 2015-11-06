@@ -104,6 +104,30 @@ angular.module('svgChartsApp')
       rect.enter().append('rect');
 
       rect
+        .on('click', function(d) {
+          var m = d3.mouse($scope.svg.node());
+
+          if($scope.popoverText) {
+            $scope.popoverText.remove();
+          }
+
+          $scope.popoverText = $scope.svg.append('text')
+            .attr("x", m[0])
+            .attr("y", m[1])
+            .attr('class', 'popover-text')
+            .attr('name', 'popover-text')
+            .text( function () {
+              return  'Date: ' + d.Date +
+                ' Open: ' + d.Open +
+                ' High: ' + d.High +
+                ' Low: ' + d.Low +
+                ' Close: ' + d.Close; })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "20px")
+            .attr("fill", "black");
+        });
+
+      rect
         .transition()
         .duration(500)
         .ease("linear")
