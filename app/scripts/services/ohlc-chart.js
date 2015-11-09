@@ -12,9 +12,7 @@ angular.module('svgChartsApp')
 
     var OHLCChart = {};
 
-
-
-    OHLCChart.cleanUp = function($scope) {
+    OHLCChart.cleanUp = function() {
       //OHLCChart.area.remove();
       if(OHLCChart.bars && OHLCChart.bars.selectAll('.bar')) {
         var bars = OHLCChart.bars.selectAll('.bar');
@@ -36,10 +34,6 @@ angular.module('svgChartsApp')
     var isUpDay = function(d) {
       return d.close > d.Open;
     };
-    //
-    //var isDownDay = function (d) {
-    //  return d.Open > d.close;
-    //};
 
     var applyOHLC = function ($scope, bars) {
 
@@ -174,7 +168,6 @@ angular.module('svgChartsApp')
 
     OHLCChart.render = function ($scope, historicalData, isCandlestick) {
 
-
       //if(!OHLCChart.bars) {
         OHLCChart.bars = $scope.svgContent;
       //}
@@ -223,8 +216,6 @@ angular.module('svgChartsApp')
       }
 
     };
-
-
 
     return OHLCChart;
 

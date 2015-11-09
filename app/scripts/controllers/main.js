@@ -8,7 +8,7 @@
  * Controller of the svgChartsApp
  */
 angular.module('svgChartsApp')
-  .controller('MainController', function ($scope, $http) {
+  .controller('MainController', function ($http) {
 
 
     /**
@@ -22,15 +22,14 @@ angular.module('svgChartsApp')
      * Initiates the controller
      *
      */
-    $scope.init = function () {
-      // Alerts the user
-      //alert(1);
-      $scope.symbol = {};
-      $scope.selectedChart = 'candlestick-chart';
-      $scope.selectedExtras = [];
+    this.init = function () {
+      var _this = this;
+      this.symbol = {};
+      this.selectedChart = 'candlestick-chart';
+      this.selectedExtras = [];
 
       $http.get('json/historical-data.json').then(function(results) {
-        $scope.symbol.historicalData = results.data.query.results.quote;
+        _this.symbol.historicalData = results.data.query.results.quote;
       });
     };
 
@@ -41,6 +40,6 @@ angular.module('svgChartsApp')
      * Initiates the controller.
      *
      */
-    $scope.init();
+    this.init();
 
   });
