@@ -94,8 +94,13 @@ angular.module('svgChartsApp')
 
     var applyCandlestick = function ($scope, bars) {
 
-      var rect,
-        rectangleWidth = 3;
+      var rect;
+      var rectangleWidth = 3;
+      var popoverTextBoxWidth = 200;
+      var popoverTextBoxHeight = 200;
+      var popoverTextBoxX;
+      var popoverTextBoxY;
+
 
       rect = bars.selectAll('rect').data(function (d) {
         return [d];
@@ -107,13 +112,33 @@ angular.module('svgChartsApp')
         .on('click', function(d) {
           var m = d3.mouse($scope.svg.node());
 
-          if($scope.popoverText) {
+          popoverTextBoxX = m[0];
+          popoverTextBoxY = m[1];
+
+          if($scope.popoverText || $scope.popoverTextBox) {
             $scope.popoverText.remove();
+            $scope.popoverTextBox.remove();
           }
 
+          if(popoverTextBoxY + popoverTextBoxHeight > $scope.height) {
+            popoverTextBoxY = popoverTextBoxY - popoverTextBoxHeight;
+          }
+
+          if(popoverTextBoxX + popoverTextBoxWidth > $scope.width) {
+            popoverTextBoxX = popoverTextBoxX - popoverTextBoxWidth;
+          }
+
+          $scope.popoverTextBox = $scope.svg.append('rect')
+            .attr("x", popoverTextBoxX)
+            .attr("y", popoverTextBoxY)
+            .attr("width", popoverTextBoxWidth)
+            .attr("height", popoverTextBoxHeight)
+            .attr("fill", "grey");
+
+
           $scope.popoverText = $scope.svg.append('text')
-            .attr("x", m[0])
-            .attr("y", m[1])
+            .attr("x", popoverTextBoxX)
+            .attr("y", popoverTextBoxY)
             .attr('class', 'popover-text')
             .attr('name', 'popover-text')
             .text( function () {
@@ -137,6 +162,7 @@ angular.module('svgChartsApp')
         .attr('y', function (d) {
           return isUpDay(d) ? $scope.y(d.close) : $scope.y(d.Open);
         })
+        .attr('style', 'cursor:pointer;')
         .attr('width', rectangleWidth * 2)
         .attr('height', function (d) {
           return isUpDay(d)
