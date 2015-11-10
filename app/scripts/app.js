@@ -23,13 +23,10 @@ angular
   ])
   .config(function ($routeProvider) {
     $routeProvider
-      .when('/', {
+      .when('/svg-charts/demo', {
         templateUrl: 'views/routes/main.html',
         controller: 'MainController',
         controllerAs: 'ctrl'
-      })
-      .otherwise({
-        redirectTo: '/'
       });
   });
 

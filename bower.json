@@ -1,6 +1,13 @@
 {
   "name": "svg-charts",
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "main": [
+    "dist/scripts/scripts.js"
+  ],
+  "ignore": [
+    "node_modules",
+    "test"
+  ],
   "dependencies": {
     "angular": "latest",
     "angular-animate": "latest",
