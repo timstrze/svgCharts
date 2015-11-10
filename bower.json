@@ -19,7 +19,6 @@
     "angular-material": "latest",
     "ng-messages": "latest",
     "d3": "~3.5.6",
-    "angular-local-storage": "latest",
     "angular-material-icons": "latest"
   },
   "devDependencies": {

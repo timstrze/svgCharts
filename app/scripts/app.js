@@ -18,7 +18,6 @@ angular
     'ngTouch',
     'ngMaterial',
     'ngMessages',
-    'LocalStorageModule',
     'ngMdIcons'
   ])
   .config(function ($routeProvider) {
