@@ -1,1 +1,893 @@
-"use strict";angular.module("svgChartsApp",["ngAnimate","ngCookies","ngResource","ngRoute","ngSanitize","ngTouch","ngMaterial","ngMessages","ngMdIcons"]).config(["$routeProvider",function(a){a.when("/svg-charts/demo",{templateUrl:"views/routes/main.html",controller:"MainController",controllerAs:"ctrl"})}]),angular.module("svgChartsApp").controller("MainController",["$http",function(a){this.init=function(){var b=this;this.symbol={},this.selectedChart="candlestick-chart",this.selectedExtras=[],a.get("json/historical-data.json").then(function(a){b.symbol.historicalData=a.data.query.results.quote})},this.init()}]),angular.module("svgChartsApp").directive("svgChart",["$window","$mdMedia","LineChart","OHLCChart",function(a,b,c,d){return{scope:{symbol:"=",selectedExtras:"=",selectedChart:"=",positions:"="},template:'<svg class="svg-chart"><g name="svgContent" class="svg-chart-content"></g></svg>',link:function(e,f){e.svg=d3.select(f[0].querySelector(".svg-chart")).attr("name","svgChart").attr("style","background-color:#fff"),e.svgContent=e.svg.selectAll(".svg-chart-content"),e.margin={top:20,right:40,bottom:30,left:0},e.gradient=e.svgContent.append("svg:defs").append("svg:linearGradient").attr("id","gradient").attr("x1","100%").attr("y1","100%").attr("x2","100%").attr("y2","0%").attr("spreadMethod","pad"),e.gradient.append("svg:stop").attr("offset","0%").attr("stop-color","#fff").attr("stop-opacity",1),e.gradient.append("svg:stop").attr("offset","100%").attr("stop-color","#b8e1fc").attr("stop-opacity",1),e.chartArea=e.svgContent.append("path").attr("name","chartArea").style("fill","url(#gradient)"),e.chartLine=e.svgContent.append("path").attr("name","chartLine"),e.bollingerBandArea=e.svgContent.append("svg:path").attr("class","bollinger-band-area").attr("style","fill: grey;").attr("fill-opacity",.2),e.bollingerBandHigh=e.svgContent.append("svg:path").attr("class","band bollinger-band-high").attr("style","stroke: black; fill: none;"),e.bollingerBandLow=e.svgContent.append("svg:path").attr("class","band bollinger-band-low").attr("style","stroke: black; fill: none;"),e.movingAvgLine=e.svgContent.append("svg:path").attr("class","moving-average").attr("style","stroke: #FF9900; fill: none;"),e.xAxis=e.svgContent.append("g").attr("name","xAxis"),e.yAxis=e.svgContent.append("g").attr("name","yAxis"),e.horizontalGrid=e.svgContent.append("g").attr("name","horizontalGrid"),e.verticalGrid=e.svgContent.append("g").attr("name","verticalGrid"),e.parseDate=d3.time.format("%Y-%m-%d").parse,e.renderBollingerBands=function(){var a=d3.svg.line().x(function(a,b){return e.x(a.date)}).y(function(a,b){return e.y(a.Low)}).interpolate(g(3)),b=d3.svg.area().x(function(a){return e.x(a.date)}).y0(function(a){return e.y(a.Low)}).y1(function(a){return e.y(a.High)}).interpolate(g(3)),c=d3.svg.line().x(function(a,b){return e.x(a.date)}).y(function(a,b){return e.y(a.High)}).interpolate(g(3));e.bollingerBandLow.transition().duration(500).ease("linear").attr("d",a(e.symbol.historicalData)),e.bollingerBandHigh.transition().duration(500).ease("linear").attr("d",c(e.symbol.historicalData)),e.bollingerBandArea.transition().duration(500).ease("linear").attr("d",b(e.symbol.historicalData))},e.getBollingerBands=function(a,b,c){for(var d=[],e=a-1,f=c.length;f>e;e++){var g=c.slice(e+1-a,e),h=d3.mean(g,function(a){return a.close}),i=Math.sqrt(d3.mean(g.map(function(a){return Math.pow(a.close-h,2)})));d.push({date:c[e].date,ma:h,low:h-b*i,high:h+b*i})}return d},e.resizeScene=function(){e.symbol.historicalData.forEach(function(a){a.date=e.parseDate(a.Date),a.close=+a.Close,a.low=+a.Low}),e.width=f.parent()[0].offsetWidth-e.margin.left-e.margin.right,e.height=f.parent()[0].offsetHeight-e.margin.top-e.margin.bottom,e.x=d3.time.scale().range([0,e.width]),e.y=d3.scale.linear().range([e.height,0]),e.x.domain(d3.extent(e.symbol.historicalData,function(a){return a.date}));var a=20,b=2;e.getBollingerBands(a,b,e.symbol.historicalData);e.y.domain(d3.extent(e.symbol.historicalData,function(a){return a.close})),e.svg.attr("width",e.width+e.margin.left+e.margin.right).attr("height",e.height+e.margin.top+e.margin.bottom),e.svgContent.attr("transform","translate("+e.margin.left+","+e.margin.top+")")},e.renderPositions=function(){},e.renderXYAxis=function(){var a=d3.svg.axis().scale(e.x).orient("bottom");(b("sm")||b("md"))&&a.ticks(5);var c=d3.svg.axis().scale(e.y).orient("right");e.xAxis.attr("class","x axis").attr("transform","translate(0,"+e.height+")").call(a).attr({fill:"none","shape-rendering":"crispEdges",stroke:"rgba(0,0,0,0.54)"}),e.yAxis.attr("class","y axis").attr("transform","translate("+e.width+",0)").call(c).attr({fill:"none","shape-rendering":"crispEdges",stroke:"rgba(0,0,0,0.54)"}),e.horizontalGrid.selectAll("line").remove();var d=e.horizontalGrid.selectAll("line").data(e.y.ticks(4));d.enter().append("line").attr({"class":"horizontalGrid",x1:0,x2:e.width,y1:function(a){return e.y(a)},y2:function(a){return e.y(a)},fill:"none","shape-rendering":"crispEdges",stroke:"#C7C7C7","stroke-width":"1px","stroke-dasharray":"5, 5"}),d.exit().remove(),e.verticalGrid.selectAll("line").remove();var f=e.verticalGrid.selectAll("line").data(e.x.ticks(12));f.enter().append("line").attr({"class":"verticalGrid",x1:function(a){return e.x(a)},x2:function(a){return e.x(a)},y1:-e.margin.top,y2:e.height,fill:"none","shape-rendering":"crispEdges",stroke:"#C7C7C7","stroke-width":"1px","stroke-dasharray":"5, 5"}),f.exit().remove(),e.xAxis.selectAll("text").attr("style","fill:black; stroke: 0px;"),e.yAxis.selectAll("text").attr("style","fill:black; stroke: 0px;")};var g=function(a){return function(b){b=b.map(function(c,d,e){var f,g,h=d+a-1;return h<b.length?(f=e.slice(d,h+1),g=f.reduce(function(a,b){return[a[0]+b[0],a[1]+b[1]]}),g.map(function(b){return b/a})):void 0}),b=b.filter(function(a){return"undefined"!=typeof a});var c=d3.svg.line().interpolate("basis")(b);return c.slice(1,c.length)}};e.renderMovingAverage=function(){var a=d3.svg.line().x(function(a,b){return e.x(a.date)}).y(function(a,b){return e.y(a.close)}).interpolate(g(3));e.movingAvgLine.transition().duration(500).ease("linear").attr("d",a(e.symbol.historicalData))},e.render=function(){e.resizeScene(),"ohlc-chart"===e.selectedChart?(d.cleanUp(),c.cleanUp(),d.render(e,e.symbol.historicalData)):"candlestick-chart"===e.selectedChart?(d.cleanUp(),c.cleanUp(),d.render(e,e.symbol.historicalData,!0)):(c.cleanUp(),d.cleanUp(),c.render(e,e.symbol.historicalData)),e.selectedExtras&&e.selectedExtras.toString().indexOf("moving-average")>-1?e.renderMovingAverage():e.movingAvgLine.attr("d",function(){}),e.selectedExtras&&e.selectedExtras.toString().indexOf("bollinger-bands")>-1?e.renderBollingerBands():(e.bollingerBandHigh.attr("d",function(){}),e.bollingerBandLow.attr("d",function(){}),e.bollingerBandArea.attr("d",function(){})),e.renderXYAxis()},e.$watch(function(){return e.symbol&&e.symbol.historicalData?JSON.stringify([e.symbol.historicalData,e.selectedChart,e.selectedExtras]):void 0},function(){e.symbol&&e.symbol.historicalData&&e.symbol.historicalData.length>0&&e.render()},!0),angular.element(a).on("resize",function(){e.symbol&&e.symbol.historicalData&&e.symbol.historicalData.length>0&&e.render()})}}}]),angular.module("svgChartsApp").factory("LineChart",function(){var a={};return a.cleanUp=function(){a.area&&a.area.attr("d",function(){}),a.chartLine&&a.chartLine.attr("d",function(){})},a.render=function(b,c){a.chartLine||(a.chartLine=b.chartLine),a.area||(a.area=b.chartArea);var d=d3.svg.line().x(function(a){return b.x(a.date)}).y(function(a){return b.y(a.close)}),e=d3.svg.area().x(function(a){return b.x(a.date)}).y0(b.height).y1(function(a){return b.y(a.close)});a.area.datum(c).transition().duration(500).ease("linear").attr("class","area").attr("d",e),a.chartLine.datum(c).transition().duration(500).ease("linear").attr("class","line").attr("d",d).attr("style","fill: none;stroke: steelblue;stroke-width: 1.5px;")},a}),angular.module("svgChartsApp").factory("OHLCChart",function(){var a={};a.cleanUp=function(){if(a.bars&&a.bars.selectAll(".bar")){var b=a.bars.selectAll(".bar");b.selectAll(".high-low-line").attr("d",function(){}),b.selectAll(".open-tick").attr("d",function(){}),b.selectAll(".close-tick").attr("d",function(){}),b.selectAll("rect").remove()}};var b=d3.svg.line().x(function(a){return a.x}).y(function(a){return a.y}),c=function(a){return a.close>a.Open},d=function(a,d){var e,f,g=5;e=d.selectAll(".open-tick").data(function(a){return[a]}),f=d.selectAll(".close-tick").data(function(a){return[a]}),e.enter().append("path"),f.enter().append("path"),e.classed("open-tick",!0).transition().duration(500).ease("linear").attr("d",function(c){return b([{x:a.x(c.date)-g,y:a.y(c.Open)},{x:a.x(c.date),y:a.y(c.Open)}])}).attr({stroke:function(a){return c(a)?"green":"red"}}),f.classed("close-tick",!0).transition().duration(500).ease("linear").attr("d",function(c){return b([{x:a.x(c.date),y:a.y(c.close)},{x:a.x(c.date)+g,y:a.y(c.close)}])}).attr({stroke:function(a){return c(a)?"green":"red"}})},e=function(a,b){var d,e,f,g=3,h=200,i=200;d=b.selectAll("rect").data(function(a){return[a]}),d.enter().append("rect"),d.on("click",function(b){var c=d3.mouse(a.svg.node());e=c[0],f=c[1],(a.popoverText||a.popoverTextBox)&&(a.popoverText.remove(),a.popoverTextBox.remove()),f+i>a.height&&(f-=i),e+h>a.width&&(e-=h),a.popoverTextBox=a.svg.append("rect").attr("x",e).attr("y",f).attr("width",h).attr("height",i).attr("fill","grey"),a.popoverText=a.svg.append("text").attr("x",e).attr("y",f).attr("class","popover-text").attr("name","popover-text").text(function(){return"Date: "+b.Date+" Open: "+b.Open+" High: "+b.High+" Low: "+b.Low+" Close: "+b.Close}).attr("font-family","sans-serif").attr("font-size","20px").attr("fill","black")}),d.transition().duration(500).ease("linear").attr("x",function(b){return a.x(b.date)-g}).attr("y",function(b){return c(b)?a.y(b.close):a.y(b.Open)}).attr("style","cursor:pointer;").attr("width",2*g).attr("height",function(b){return c(b)?a.y(b.Open)-a.y(b.close):a.y(b.close)-a.y(b.Open)})};return a.render=function(f,g,h){a.bars=f.svgContent;var i=f.svgContent.selectAll(".bar").data(g,function(a){return a.date});i.enter().append("g").classed("bar",!0),i.attr({fill:function(a){return c(a)?"green":"red"}});var j=i.selectAll(".high-low-line").data(function(a){return[a]});j.enter().append("path"),j.classed("high-low-line",!0).transition().duration(500).ease("linear").attr("d",function(a){return b([{x:f.x(a.date),y:f.y(a.High)},{x:f.x(a.date),y:f.y(a.Low)}])}).attr({stroke:function(a){return c(a)?"green":"red"}}),h?e(f,i):d(f,i)},a}),angular.module("svgChartsApp").run(["$templateCache",function(a){a.put("views/routes/main.html",'<div style="height:500px"> <svg-chart positions="{}" selected-extras="ctrl.selectedExtras" selected-chart="ctrl.selectedChart" symbol="ctrl.symbol"> </svg-chart> </div>')}]);
+'use strict';
+
+/**
+ * @ngdoc overview
+ * @name svgChartsApp
+ * @description
+ * # svgChartsApp
+ *
+ * Main module of the application.
+ */
+angular
+  .module('svgChartsApp', [
+    'ngAnimate',
+    'ngCookies',
+    'ngResource',
+    'ngRoute',
+    'ngSanitize',
+    'ngTouch',
+    'ngMaterial',
+    'ngMessages',
+    'ngMdIcons'
+  ])
+  .config(function ($routeProvider) {
+    $routeProvider
+      .when('/svg-charts/demo', {
+        templateUrl: 'views/routes/main.html',
+        controller: 'MainController',
+        controllerAs: 'ctrl'
+      });
+  });
+
+
+
+
+'use strict';
+
+/**
+ * @ngdoc function
+ * @name svgChartsApp.controller:MainController
+ * @description
+ * # MainController
+ * Controller of the svgChartsApp
+ */
+angular.module('svgChartsApp')
+  .controller('MainController', function ($http) {
+
+
+    /**
+     * @ngdoc function
+     * @name MainController.init
+     * @module Main
+     * @methodOf svgChartsApp.controller:MainController
+     * @kind function
+     *
+     * @description
+     * Initiates the controller
+     *
+     */
+    this.init = function () {
+      var _this = this;
+      this.symbol = {};
+      this.selectedChart = 'candlestick-chart';
+      this.selectedExtras = [];
+
+      $http.get('json/historical-data.json').then(function(results) {
+        _this.symbol.historicalData = results.data.query.results.quote;
+      });
+    };
+
+
+
+    /**
+     * @description
+     * Initiates the controller.
+     *
+     */
+    this.init();
+
+  });
+
+'use strict';
+
+/**
+ * @ngdoc directive
+ * @name svgChartsApp.directive:svg-chart
+ * @element svg-chart
+ * @restrict E
+ *
+ * @description
+ * # baseChart
+ * Directive to create a line chart based off a Symbol's historical data.
+ *
+ * @param {Array} historicalData An array of historical data
+ */
+
+/*global d3 */
+
+angular.module('svgChartsApp')
+  .directive('svgChart', function ($window, $mdMedia, LineChart, OHLCChart) {
+    return {
+      scope: {
+        symbol: '=',
+        selectedExtras: '=',
+        selectedChart: '=',
+        positions: '='
+      },
+      template: '<svg class="svg-chart"><g name="svgContent" class="svg-chart-content"></g></svg>',
+      link: function postLink($scope, element) {
+
+        $scope.svg = d3.select(element[0].querySelector('.svg-chart'))
+          .attr('name', 'svgChart')
+          .attr('style', 'background-color:#fff');
+
+
+        $scope.svgContent = $scope.svg.selectAll(".svg-chart-content");
+
+        //$scope.chartPositions = $scope.svgContent.append('path').attr('name', 'chartPositions');
+
+        // Add extra margin
+        $scope.margin = {top: 20, right: 40, bottom: 30, left: 0};
+
+        $scope.gradient = $scope.svgContent.append('svg:defs')
+          .append('svg:linearGradient')
+          .attr('id', 'gradient')
+          .attr('x1', '100%')
+          .attr('y1', '100%')
+          .attr('x2', '100%')
+          .attr('y2', '0%')
+          .attr('spreadMethod', 'pad');
+
+        $scope.gradient.append('svg:stop')
+          .attr('offset', '0%')
+          .attr('stop-color', '#fff')
+          .attr('stop-opacity', 1);
+
+        $scope.gradient.append('svg:stop')
+          .attr('offset', '100%')
+          .attr('stop-color', '#b8e1fc')
+          .attr('stop-opacity', 1);
+
+        $scope.chartArea = $scope.svgContent.append('path').attr('name', 'chartArea')
+          .style('fill', 'url(#gradient)');
+
+        $scope.chartLine = $scope.svgContent.append('path').attr('name', 'chartLine');
+
+        $scope.bollingerBandArea = $scope.svgContent.append('svg:path').attr('class', 'bollinger-band-area')
+          .attr('style', 'fill: grey;').attr('fill-opacity', 0.2);
+
+        $scope.bollingerBandHigh = $scope.svgContent.append('svg:path').attr('class', 'band bollinger-band-high')
+          .attr('style', 'stroke: black; fill: none;');
+
+        $scope.bollingerBandLow = $scope.svgContent.append('svg:path').attr('class', 'band bollinger-band-low')
+          .attr('style', 'stroke: black; fill: none;');
+
+        $scope.movingAvgLine = $scope.svgContent.append('svg:path').attr('class', 'moving-average')
+          .attr('style', 'stroke: #FF9900; fill: none;');
+
+        $scope.xAxis = $scope.svgContent.append('g').attr('name', 'xAxis');
+        //.attr('style', 'fill: none;stroke: rgba(0,0,0,0.54);shape-rendering: crispEdges;');
+
+        $scope.yAxis = $scope.svgContent.append('g').attr('name', 'yAxis');
+          //.attr('style', 'fill: none;stroke: rgba(0,0,0,0.54);shape-rendering: crispEdges;');
+
+        $scope.horizontalGrid = $scope.svgContent.append('g').attr('name', 'horizontalGrid');
+
+        $scope.verticalGrid = $scope.svgContent.append('g').attr('name', 'verticalGrid');
+
+        $scope.parseDate = d3.time.format('%Y-%m-%d').parse;
+
+        $scope.renderBollingerBands = function () {
+
+          //var _movingSum;
+          var bollingerBandLow = d3.svg.line()
+            .x(function (d, i) {
+              return $scope.x(d.date);
+            })
+            .y(function (d, i) {
+              return $scope.y(d.Low);
+            })
+            .interpolate(movingAvg(3));
+
+
+          var bollingerBandArea = d3.svg.area()
+            .x(function(d) { return $scope.x(d.date); })
+            .y0(function(d) { return $scope.y(d.Low); })
+            .y1(function(d) { return $scope.y(d.High); })
+            .interpolate(movingAvg(3));
+
+          //var _movingSum;
+          var bollingerBandHigh = d3.svg.line()
+            .x(function (d, i) {
+              return $scope.x(d.date);
+            })
+            .y(function (d, i) {
+              return $scope.y(d.High);
+            })
+            .interpolate(movingAvg(3));
+
+          $scope.bollingerBandLow
+            .transition()
+            .duration(500)
+            .ease("linear")
+            .attr('d', bollingerBandLow($scope.symbol.historicalData));
+
+          $scope.bollingerBandHigh
+            .transition()
+            .duration(500)
+            .ease("linear")
+            .attr('d', bollingerBandHigh($scope.symbol.historicalData));
+
+          $scope.bollingerBandArea
+            .transition()
+            .duration(500)
+            .ease("linear")
+            .attr('d', bollingerBandArea($scope.symbol.historicalData));
+        };
+
+        $scope.getBollingerBands = function (n, k, data) {
+          var bands = []; //{ ma: 0, low: 0, high: 0 }
+          for (var i = n - 1, len = data.length; i < len; i++) {
+            var slice = data.slice(i + 1 - n, i);
+            var mean = d3.mean(slice, function (d) {
+              return d.close;
+            });
+            var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
+              return Math.pow(d.close - mean, 2);
+            })));
+            bands.push({
+              date: data[i].date,
+              ma: mean,
+              low: mean - (k * stdDev),
+              high: mean + (k * stdDev)
+            });
+          }
+          return bands;
+        };
+
+        $scope.resizeScene = function () {
+
+          // Format the historical data for d3
+          $scope.symbol.historicalData.forEach(function (d) {
+            d.date = $scope.parseDate(d.Date);
+            d.close = +d.Close;
+            d.low = +d.Low;
+          });
+
+          // Get the width of the parent element
+          $scope.width = element.parent()[0].offsetWidth - $scope.margin.left - $scope.margin.right;
+          // Get the height of the parent element
+          $scope.height = element.parent()[0].offsetHeight - $scope.margin.top - $scope.margin.bottom;
+
+          $scope.x = d3.time.scale()
+            .range([0, $scope.width]);
+
+          $scope.y = d3.scale.linear()
+            .range([$scope.height, 0]);
+
+          $scope.x.domain(d3.extent($scope.symbol.historicalData, function (d) {
+            return d.date;
+          }));
+
+          var n = 20; // n-period of moving average
+          var k = 2;  // k times n-period standard deviation above/below moving average
+
+
+          var bandsData = $scope.getBollingerBands(n, k, $scope.symbol.historicalData);
+
+
+          $scope.y.domain(d3.extent($scope.symbol.historicalData, function (d) {
+            return d.close;
+          }));
+
+
+          $scope.svg
+            .attr('width', $scope.width + $scope.margin.left + $scope.margin.right)
+            .attr('height', $scope.height + $scope.margin.top + $scope.margin.bottom);
+
+          $scope.svgContent
+            .attr('transform', 'translate(' + $scope.margin.left + ',' + $scope.margin.top + ')');
+        };
+
+        $scope.renderPositions = function () {
+          //var positions;
+          //
+          //// Loop over the Positions
+          //angular.forEach($scope.positions, function (position) {
+          //  // Check to see if Symbols match
+          //  if (position.Symbol.Symbol.toLowerCase() === $scope.symbol.Symbol.toLowerCase()) {
+          //    positions = position;
+          //  }
+          //});
+
+          //if(positions) {
+          //  var x = d3.time.scale()
+          //    .range([0, $scope.width]);
+          //
+          //  var y = d3.scale.linear()
+          //    .range([$scope.height, 0]);
+          //
+          //  //var g = $scope.svg.append('g');
+          //  //
+          //  //var img = g.append('svg:image')
+          //  //  .attr('xlink:href', './images/icons/buy.svg')
+          //  //  .attr('width', 50)
+          //  //  .attr('height', 50)
+          //  //  .attr('x', 228)
+          //  //  .attr('y',53);
+          //
+          //
+          //  $scope.svgContent.selectAll('circle').remove();
+          //  $scope.svgContent.selectAll('circle')
+          //    .data(positions.buys)
+          //    .enter()
+          //    .append('circle')
+          //    .attr('cx', function(d, i) {
+          //      return x($scope.parseDate(d.created.split(' ')[0]));
+          //    })
+          //    .attr('cy', function (d) {
+          //      return y(d.ask);
+          //    })
+          //
+          //    .attr('r', function(d) {
+          //      return 10;
+          //    })
+          //    .attr('fill', '#3F51B5')
+          //    .attr('stroke', '#fff');
+          //
+          //  //$scope.svg.selectAll('text').remove();
+          //  //$scope.svg.selectAll('text')
+          //  //  .data(positions.buys)
+          //  //  .enter()
+          //  //  .append('text')
+          //  //  .attr('x', function(d, i) {
+          //  //    return x($scope.parseDate(d.created.split(' ')[0]));
+          //  //  })
+          //  //  .attr('y', function (d) {
+          //  //    return y(d.ask);
+          //  //  })
+          //  //  .text(function(d) {
+          //  //    return d.ask;
+          //  //  });
+          //
+          //}else{
+          //  //$scope.svg.selectAll('text').remove();
+          //  $scope.svgContent.selectAll('circle').remove()
+          //}
+        };
+
+        $scope.renderXYAxis = function () {
+
+
+          var xAxis = d3.svg.axis()
+            .scale($scope.x)
+            .orient('bottom');
+
+
+          //.innerTickSize(-$scope.height)
+          //.outerTickSize(0)
+          //.tickPadding(10);
+
+          // Only toggle the modal if small size
+          if ($mdMedia('sm') || $mdMedia('md')) {
+            xAxis.ticks(5);
+          }
+
+          var yAxis = d3.svg.axis()
+            .scale($scope.y)
+            .orient('right');
+
+
+          //.innerTickSize(-$scope.width)
+          //.outerTickSize(0)
+          //.tickPadding(10);
+
+
+          $scope.xAxis
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + ($scope.height) + ')')
+            .call(xAxis)
+            .attr({
+              'fill': 'none',
+              'shape-rendering': 'crispEdges',
+              'stroke': 'rgba(0,0,0,0.54)'
+            });
+
+
+          $scope.yAxis
+            .attr('class', 'y axis')
+            .attr('transform', 'translate(' + ($scope.width) + ',0)')
+            .call(yAxis)
+            .attr({
+              'fill': 'none',
+              'shape-rendering': 'crispEdges',
+              'stroke': 'rgba(0,0,0,0.54)'
+            });
+
+
+          //$scope.yAxisLines
+          //  //.attr('transform', 'translate(-20,'+h+')')
+          //  .call(d3.svg.axis()
+          //    .scale(xAxis)
+          //    .orient('bottom')
+          //    .ticks(4)
+          //    .tickSize(-$scope.height,0,0)
+          //    .tickFormat('')
+          //)
+
+          $scope.horizontalGrid.selectAll('line').remove();
+
+          var horizontalGridLine =  $scope.horizontalGrid.selectAll('line').data($scope.y.ticks(4));
+
+          horizontalGridLine
+            .enter()
+            .append('line')
+            .attr(
+            {
+              'class': 'horizontalGrid',
+              'x1': 0,
+              'x2': $scope.width,
+              'y1': function (d) {
+                return $scope.y(d);
+              },
+              'y2': function (d) {
+                return $scope.y(d);
+              },
+              'fill': 'none',
+              'shape-rendering': 'crispEdges',
+              'stroke': '#C7C7C7',
+              'stroke-width': '1px',
+              'stroke-dasharray': '5, 5'
+            });
+
+          horizontalGridLine.exit().remove();
+
+          $scope.verticalGrid.selectAll('line').remove();
+
+          var verticalGridLine = $scope.verticalGrid.selectAll('line')
+            .data($scope.x.ticks(12));
+
+          verticalGridLine
+            .enter()
+            .append('line')
+            .attr(
+            {
+              'class': 'verticalGrid',
+              'x1': function (d) {
+                return $scope.x(d);
+              },
+              'x2': function (d) {
+                return $scope.x(d);
+              },
+              'y1': -$scope.margin.top,
+              'y2': $scope.height,
+              'fill': 'none',
+              'shape-rendering': 'crispEdges',
+              'stroke': '#C7C7C7',
+              'stroke-width': '1px',
+              'stroke-dasharray': '5, 5'
+            });
+
+          verticalGridLine.exit().remove();
+
+          $scope.xAxis.selectAll('text').attr('style', 'fill:black; stroke: 0px;');
+          $scope.yAxis.selectAll('text').attr('style', 'fill:black; stroke: 0px;');
+
+
+
+
+        };
+
+        var movingAvg = function (n) {
+          return function (points) {
+            points = points.map(function (each, index, array) {
+              var to = index + n - 1;
+              var subSeq, sum;
+              if (to < points.length) {
+                subSeq = array.slice(index, to + 1);
+                sum = subSeq.reduce(function (a, b) {
+                  return [a[0] + b[0], a[1] + b[1]];
+                });
+                return sum.map(function (each) {
+                  return each / n;
+                });
+              }
+              return undefined;
+            });
+            points = points.filter(function (each) {
+              return typeof each !== 'undefined'
+            });
+            // Transform the points into a basis line
+            var pathDesc = d3.svg.line().interpolate('basis')(points);
+            // Remove the extra 'M'
+            return pathDesc.slice(1, pathDesc.length);
+          }
+        };
+
+        $scope.renderMovingAverage = function() {
+
+          //var _movingSum;
+          var movingAverageLine = d3.svg.line()
+            .x(function (d, i) {
+              return $scope.x(d.date);
+            })
+            .y(function (d, i) {
+              return $scope.y(d.close);
+            })
+            .interpolate(movingAvg(3));
+
+          $scope.movingAvgLine
+            .transition()
+            .duration(500)
+            .ease("linear")
+            .attr('d', movingAverageLine($scope.symbol.historicalData));
+        };
+
+        $scope.render = function () {
+          $scope.resizeScene();
+
+          if ($scope.selectedChart === 'ohlc-chart') {
+            OHLCChart.cleanUp();
+            LineChart.cleanUp();
+            OHLCChart.render($scope, $scope.symbol.historicalData);
+          } else if ($scope.selectedChart === 'candlestick-chart') {
+            OHLCChart.cleanUp();
+            LineChart.cleanUp();
+            OHLCChart.render($scope, $scope.symbol.historicalData, true);
+          } else {
+            LineChart.cleanUp();
+            OHLCChart.cleanUp();
+            LineChart.render($scope, $scope.symbol.historicalData);
+          }
+
+          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('moving-average') > -1) {
+            $scope.renderMovingAverage();
+          }else{
+            $scope.movingAvgLine.attr('d', function() {});
+          }
+
+          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('bollinger-bands') > -1) {
+            $scope.renderBollingerBands();
+          }else{
+            $scope.bollingerBandHigh.attr('d', function() {});
+            $scope.bollingerBandLow.attr('d', function() {});
+            $scope.bollingerBandArea.attr('d', function() {});
+          }
+
+          $scope.renderXYAxis();
+
+        };
+
+
+
+
+
+
+
+
+
+
+
+
+        /**
+         * @ngdoc function
+         * @name $watch
+         * @eventOf svgChartsApp.directive:base-chart
+         *
+         * @description
+         * Watches the Symbol historicalData Array and calls the render Function.
+         *
+         */
+        $scope.$watch(function () {
+          if ($scope.symbol && $scope.symbol.historicalData) {
+            return JSON.stringify([$scope.symbol.historicalData, $scope.selectedChart, $scope.selectedExtras]);
+          }
+        }, function () {
+          // Make sure there is historical data
+          if ($scope.symbol && $scope.symbol.historicalData && $scope.symbol.historicalData.length > 0) {
+            $scope.render();
+          }
+        }, true);
+
+
+        /**
+         * @ngdoc function
+         * @name $on
+         * @eventOf svgChartsApp.directive:base-chart
+         *
+         * @description
+         * Watches the window and renders the line chart
+         *
+         */
+        angular.element($window).on('resize', function () {
+          // Make sure there is historical data
+          if ($scope.symbol && $scope.symbol.historicalData && $scope.symbol.historicalData.length > 0) {
+            $scope.render();
+          }
+        });
+      }
+    };
+  });
+
+'use strict';
+
+/**
+ * @ngdoc service
+ * @name svgChartsApp.LineChart
+ * @description
+ * # LineChart
+ * Factory in the svgChartsApp.
+ */
+angular.module('svgChartsApp')
+  .factory('LineChart', function () {
+
+    var LineChart = {};
+
+    LineChart.cleanUp = function() {
+      if(LineChart.area) {
+        LineChart.area.attr('d', function() {});
+      }
+      if(LineChart.chartLine) {
+        LineChart.chartLine.attr('d', function() {});
+      }
+    };
+
+
+    LineChart.render = function ($scope, historicalData) {
+
+      if(!LineChart.chartLine) {
+        LineChart.chartLine = $scope.chartLine;
+      }
+
+      if(!LineChart.area) {
+        LineChart.area = $scope.chartArea;
+      }
+
+
+      var line = d3.svg.line()
+        .x(function (d) {
+          return $scope.x(d.date);
+        })
+        .y(function (d) {
+          return $scope.y(d.close);
+        });
+
+      var area = d3.svg.area()
+        .x(function(d) { return $scope.x(d.date); })
+        .y0($scope.height)
+        .y1(function(d) { return $scope.y(d.close); });
+
+      LineChart.area
+        .datum(historicalData)
+        .transition()
+        .duration(500)
+        .ease("linear")
+        .attr("class", "area")
+        .attr("d", area);
+
+      LineChart.chartLine
+        .datum(historicalData)
+        .transition()
+        .duration(500)
+        .ease("linear")
+        .attr('class', 'line')
+        .attr('d', line)
+        .attr('style', 'fill: none;stroke: steelblue;stroke-width: 1.5px;');
+    };
+
+    return LineChart;
+
+  });
+
+'use strict';
+
+/**
+ * @ngdoc service
+ * @name svgChartsApp.OHLCChart
+ * @description
+ * # OHLCChart
+ * Factory in the svgChartsApp.
+ */
+angular.module('svgChartsApp')
+  .factory('OHLCChart', function () {
+
+    var OHLCChart = {};
+
+    OHLCChart.cleanUp = function() {
+      //OHLCChart.area.remove();
+      if(OHLCChart.bars && OHLCChart.bars.selectAll('.bar')) {
+        var bars = OHLCChart.bars.selectAll('.bar');
+        bars.selectAll('.high-low-line').attr('d', function() {});
+        bars.selectAll('.open-tick').attr('d', function() {});
+        bars.selectAll('.close-tick').attr('d', function() {});
+        bars.selectAll('rect').remove();
+      }
+    };
+
+    var line = d3.svg.line()
+      .x(function (d) {
+        return d.x;
+      })
+      .y(function (d) {
+        return d.y;
+      });
+
+    var isUpDay = function(d) {
+      return d.close > d.Open;
+    };
+
+    var applyOHLC = function ($scope, bars) {
+
+      var open,
+        close,
+        tickWidth = 5;
+
+      open = bars.selectAll('.open-tick').data(function (d) {
+        return [d];
+      });
+
+      close = bars.selectAll('.close-tick').data(function (d) {
+        return [d];
+      });
+
+      open.enter().append('path');
+      close.enter().append('path');
+
+      open.classed('open-tick', true)
+        .transition()
+        .duration(500)
+        .ease("linear")
+        .attr('d', function (d) {
+          return line([
+            {x: $scope.x(d.date) - tickWidth, y: $scope.y(d.Open)},
+            {x: $scope.x(d.date), y: $scope.y(d.Open)}
+          ]);
+        })
+        .attr({
+          'stroke': function(d) {
+            return  isUpDay(d) ? 'green' : 'red';
+          }
+        });
+
+      close.classed('close-tick', true)
+        .transition()
+        .duration(500)
+        .ease("linear")
+        .attr('d', function (d) {
+          return line([
+            {x: $scope.x(d.date), y: $scope.y(d.close)},
+            {x: $scope.x(d.date) + tickWidth, y: $scope.y(d.close)}
+          ]);
+        })
+        .attr({
+          'stroke': function(d) {
+            return  isUpDay(d) ? 'green' : 'red';
+          }
+        });
+
+    };
+
+    var applyCandlestick = function ($scope, bars) {
+
+      var rect;
+      var rectangleWidth = 3;
+      var popoverTextBoxWidth = 200;
+      var popoverTextBoxHeight = 200;
+      var popoverTextBoxX;
+      var popoverTextBoxY;
+
+
+      rect = bars.selectAll('rect').data(function (d) {
+        return [d];
+      });
+
+      rect.enter().append('rect');
+
+      rect
+        .on('click', function(d) {
+          var m = d3.mouse($scope.svg.node());
+
+          popoverTextBoxX = m[0];
+          popoverTextBoxY = m[1];
+
+          if($scope.popoverText || $scope.popoverTextBox) {
+            $scope.popoverText.remove();
+            $scope.popoverTextBox.remove();
+          }
+
+          if(popoverTextBoxY + popoverTextBoxHeight > $scope.height) {
+            popoverTextBoxY = popoverTextBoxY - popoverTextBoxHeight;
+          }
+
+          if(popoverTextBoxX + popoverTextBoxWidth > $scope.width) {
+            popoverTextBoxX = popoverTextBoxX - popoverTextBoxWidth;
+          }
+
+          $scope.popoverTextBox = $scope.svg.append('rect')
+            .attr("x", popoverTextBoxX)
+            .attr("y", popoverTextBoxY)
+            .attr("width", popoverTextBoxWidth)
+            .attr("height", popoverTextBoxHeight)
+            .attr("fill", "grey");
+
+
+          $scope.popoverText = $scope.svg.append('text')
+            .attr("x", popoverTextBoxX)
+            .attr("y", popoverTextBoxY)
+            .attr('class', 'popover-text')
+            .attr('name', 'popover-text')
+            .text( function () {
+              return  'Date: ' + d.Date +
+                ' Open: ' + d.Open +
+                ' High: ' + d.High +
+                ' Low: ' + d.Low +
+                ' Close: ' + d.Close; })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "20px")
+            .attr("fill", "black");
+        });
+
+      rect
+        .transition()
+        .duration(500)
+        .ease("linear")
+        .attr('x', function (d) {
+          return $scope.x(d.date) - rectangleWidth;
+        })
+        .attr('y', function (d) {
+          return isUpDay(d) ? $scope.y(d.close) : $scope.y(d.Open);
+        })
+        .attr('style', 'cursor:pointer;')
+        .attr('width', rectangleWidth * 2)
+        .attr('height', function (d) {
+          return isUpDay(d)
+            ? $scope.y(d.Open) - $scope.y(d.close)
+            : $scope.y(d.close) - $scope.y(d.Open);
+        });
+
+    };
+
+    OHLCChart.render = function ($scope, historicalData, isCandlestick) {
+
+      //if(!OHLCChart.bars) {
+        OHLCChart.bars = $scope.svgContent;
+      //}
+
+      var bars = $scope.svgContent.selectAll('.bar')
+        .data(historicalData, function (d) {
+          return d.date;
+        });
+
+      bars.enter()
+        .append('g')
+        .classed('bar', true);
+
+      bars.attr({
+        'fill': function(d) {
+          return  isUpDay(d) ? 'green' : 'red';
+        }
+      });
+
+      var paths = bars.selectAll('.high-low-line').data(function (d) {
+        return [d];
+      });
+
+      paths.enter().append('path');
+
+      paths.classed('high-low-line', true)
+        .transition()
+        .duration(500)
+        .ease("linear")
+        .attr('d', function (d) {
+          return line([
+            { x: $scope.x(d.date), y: $scope.y(d.High) },
+            { x: $scope.x(d.date), y: $scope.y(d.Low) }
+          ]);
+        })
+        .attr({
+          'stroke': function(d) {
+            return  isUpDay(d) ? 'green' : 'red';
+          }
+        });
+
+      if(isCandlestick) {
+        applyCandlestick($scope, bars);
+      }else{
+        applyOHLC($scope, bars);
+      }
+
+    };
+
+    return OHLCChart;
+
+  });
