@@ -460,8 +460,8 @@ angular.module('svgChartsApp')
 
           verticalGridLine.exit().remove();
 
-          $scope.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54); stroke: 0px;');
-          $scope.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54); stroke: 0px;');
+          $scope.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);').attr('stroke-width', '0px');
+          $scope.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);').attr('stroke-width', '0px');
 
 
 
