@@ -31,6 +31,30 @@ angular.module('svgChartsApp')
         return d.y;
       });
 
+    var wrap = function(text, width, popoverTextBoxX) {
+      text.each(function() {
+        var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text.text(null).append("tspan").attr("x", popoverTextBoxX + 3).attr("y", parseInt(y) + 20).attr("dy", 0 + "em");
+        while (word = words.pop()) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          if (tspan.node().getComputedTextLength() > width) {
+            line.pop();
+            tspan.text(line.join(" "));
+            line = [word];
+            tspan = text.append("tspan").attr("x", popoverTextBoxX + 3).attr("y", parseInt(y) + 20).attr("dy", ++lineNumber * lineHeight + y + "em").text(word);
+          }
+        }
+      });
+    };
+
     var isUpDay = function(d) {
       return d.close > d.Open;
     };
@@ -90,8 +114,8 @@ angular.module('svgChartsApp')
 
       var rect;
       var rectangleWidth = 3;
-      var popoverTextBoxWidth = 200;
-      var popoverTextBoxHeight = 200;
+      var popoverTextBoxWidth = 135;
+      var popoverTextBoxHeight = 120;
       var popoverTextBoxX;
       var popoverTextBoxY;
 
@@ -125,9 +149,15 @@ angular.module('svgChartsApp')
           $scope.popoverTextBox = $scope.svg.append('rect')
             .attr("x", popoverTextBoxX)
             .attr("y", popoverTextBoxY)
+            .attr("rx", 6)
+            .attr("ry", 6)
             .attr("width", popoverTextBoxWidth)
             .attr("height", popoverTextBoxHeight)
-            .attr("fill", "grey");
+            .attr("fill", "rgba(0,0,0,0.34)")
+            .attr({
+              'stroke': 'black',
+              'stroke-width': '1px'
+            });
 
 
           $scope.popoverText = $scope.svg.append('text')
@@ -136,14 +166,15 @@ angular.module('svgChartsApp')
             .attr('class', 'popover-text')
             .attr('name', 'popover-text')
             .text( function () {
-              return  'Date: ' + d.Date +
-                ' Open: ' + d.Open +
-                ' High: ' + d.High +
-                ' Low: ' + d.Low +
-                ' Close: ' + d.Close; })
+              return  d.Date +
+                ' O:' + d.Open +
+                ' H:' + d.High +
+                ' L:' + d.Low +
+                ' C:' + d.Close; })
             .attr("font-family", "sans-serif")
             .attr("font-size", "20px")
-            .attr("fill", "black");
+            .attr("fill", "white")
+            .call(wrap, 125, popoverTextBoxX);
         });
 
       rect
