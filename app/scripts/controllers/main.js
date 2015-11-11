@@ -12,7 +12,7 @@ angular.module('svgChartsApp')
 
     this.Constants = Constants;
 
-    this.getSelectedSymbol = function (startDate, endDate) {
+    this.getSelectedSymbol = function (Symbol) {
 
     };
 
@@ -30,12 +30,13 @@ angular.module('svgChartsApp')
     this.init = function () {
       var _this = this;
       this.symbol = {};
-      this.selectedSymbol = 'aapl';
       this.selectedChart = 'candlestick-chart';
       this.selectedExtras = ['moving-average'];
 
-      $http.get('json/historical-data.json').then(function(results) {
-        _this.symbol.historicalData = results.data.query.results.quote;
+      $http.get('json/symbols.json').then(function(results) {
+        _this.Symbols = results.data.quote;
+        _this.selectedSymbol = _this.Symbols[0];
+
       });
     };
 

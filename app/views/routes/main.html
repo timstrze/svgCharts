@@ -1,16 +1,8 @@
 <md-content flex>
-
   <md-input-container>
     <md-select ng-model="ctrl.selectedSymbol" placeholder="Select a Symbol"
-               ng-change="ctrl.getSelectedSymbol(opt.startDate, opt.endDate)">
-      <md-option ng-value="opt.slug" ng-repeat="opt in ctrl.Constants.Symbols">{{ opt.title }}</md-option>
-    </md-select>
-  </md-input-container>
-
-  <md-input-container>
-    <md-select ng-model="selectedHistoricalDateRange" placeholder="Select a Date"
-               ng-change="ctrl.getHistoricalData(opt.startDate, opt.endDate)">
-      <md-option ng-value="opt.slug" ng-repeat="opt in ctrl.Constants.historicalDateRange">{{ opt.title }}</md-option>
+               ng-change="ctrl.getSelectedSymbol(Symbol)">
+      <md-option ng-value="Symbol" ng-repeat="Symbol in ctrl.Symbols">{{ Symbol.Symbol }}</md-option>
     </md-select>
   </md-input-container>
 
@@ -26,11 +18,13 @@
     </md-select>
   </md-input-container>
 
+</md-content>
+<md-content flex>
   <div style="height:500px;">
     <svg-chart positions="{}"
                selected-extras="ctrl.selectedExtras"
                selected-chart="ctrl.selectedChart"
-               symbol="ctrl.symbol">
+               symbol="ctrl.selectedSymbol">
     </svg-chart>
   </div>
 </md-content>

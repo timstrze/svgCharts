@@ -26,6 +26,3 @@ angular
         controllerAs: 'ctrl'
       });
   });
-
-
-
