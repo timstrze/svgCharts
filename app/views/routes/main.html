@@ -1,7 +1,36 @@
-<div style="height:500px;">
-  <svg-chart positions="{}"
-             selected-extras="ctrl.selectedExtras"
-             selected-chart="ctrl.selectedChart"
-             symbol="ctrl.symbol">
-  </svg-chart>
-</div>
+<md-content flex>
+
+  <md-input-container>
+    <md-select ng-model="ctrl.selectedSymbol" placeholder="Select a Symbol"
+               ng-change="ctrl.getSelectedSymbol(opt.startDate, opt.endDate)">
+      <md-option ng-value="opt.slug" ng-repeat="opt in ctrl.Constants.Symbols">{{ opt.title }}</md-option>
+    </md-select>
+  </md-input-container>
+
+  <md-input-container>
+    <md-select ng-model="selectedHistoricalDateRange" placeholder="Select a Date"
+               ng-change="ctrl.getHistoricalData(opt.startDate, opt.endDate)">
+      <md-option ng-value="opt.slug" ng-repeat="opt in ctrl.Constants.historicalDateRange">{{ opt.title }}</md-option>
+    </md-select>
+  </md-input-container>
+
+  <md-input-container>
+    <md-select ng-model="ctrl.selectedChart" placeholder="Select a chart">
+      <md-option ng-value="opt.slug" ng-repeat="opt in ctrl.Constants.chartTypes">{{ opt.title }}</md-option>
+    </md-select>
+  </md-input-container>
+
+  <md-input-container>
+    <md-select multiple ng-model="ctrl.selectedExtras" placeholder="Select extras">
+      <md-option ng-value="opt.slug" ng-repeat="opt in ctrl.Constants.chartExtras">{{ opt.title }}</md-option>
+    </md-select>
+  </md-input-container>
+
+  <div style="height:500px;">
+    <svg-chart positions="{}"
+               selected-extras="ctrl.selectedExtras"
+               selected-chart="ctrl.selectedChart"
+               symbol="ctrl.symbol">
+    </svg-chart>
+  </div>
+</md-content>

@@ -77,7 +77,9 @@ module.exports = function (grunt) {
       },
       livereload: {
         options: {
-          open: true,
+          open: {
+            target: 'http://localhost:9020/#/svg-charts/demo'
+          },
           middleware: function (connect) {
             return [
               connect.static('.tmp'),
