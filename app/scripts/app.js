@@ -11,13 +11,11 @@
 angular
   .module('svgChartsApp', [
     'ngAnimate',
-    'ngCookies',
     'ngResource',
     'ngRoute',
     'ngSanitize',
     'ngTouch',
     'ngMaterial',
-    'ngMessages',
     'ngMdIcons'
   ])
   .config(function ($routeProvider) {
