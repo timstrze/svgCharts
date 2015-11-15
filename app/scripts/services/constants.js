@@ -70,8 +70,16 @@ angular.module('svgChartsApp')
         slug: 'candlestick-chart'
       },
       {
+        title: 'Renko Chart',
+        slug: 'renko-chart'
+      },
+      {
         title: 'Kagi Chart',
         slug: 'kagi-chart'
+      },
+      {
+        title: 'Swing Chart',
+        slug: 'swing-chart'
       },
       {
         title: 'Comparison Chart',
@@ -117,6 +125,10 @@ angular.module('svgChartsApp')
       {
         title: 'Bollinger Bands',
         slug: 'bollinger-bands'
+      },
+      {
+        title: 'Volume',
+        slug: 'volume'
       }
     ];
 
