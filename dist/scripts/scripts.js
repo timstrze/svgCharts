@@ -297,7 +297,6 @@ angular.module('svgChartsApp')
 
         $scope.renderXYAxis = function () {
 
-
           var xAxis = d3.svg.axis()
             .scale($scope.x)
             .orient('bottom');

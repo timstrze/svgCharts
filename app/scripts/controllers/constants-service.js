@@ -127,6 +127,10 @@ angular.module('svgChartsApp')
         slug: 'bollinger-bands'
       },
       {
+        title: 'Data Points',
+        slug: 'data-points'
+      },
+      {
         title: 'Volume',
         slug: 'volume'
       }

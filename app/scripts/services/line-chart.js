@@ -8,46 +8,63 @@
  * Factory in the svgChartsApp.
  */
 angular.module('svgChartsApp')
-  .factory('LineChart', function () {
+  .factory('LineChart', function (SvgChartsScene) {
 
     var LineChart = {};
 
-    LineChart.cleanUp = function() {
-      if(LineChart.area) {
-        LineChart.area.attr('d', function() {});
-      }
-      if(LineChart.chartLine) {
-        LineChart.chartLine.attr('d', function() {});
-      }
+
+    LineChart.init = function() {
+
+      LineChart.gradient = SvgChartsScene.svgContent.append('svg:defs')
+        .append('svg:linearGradient')
+        .attr('id', 'gradient')
+        .attr('x1', '100%')
+        .attr('y1', '100%')
+        .attr('x2', '100%')
+        .attr('y2', '0%')
+        .attr('spreadMethod', 'pad');
+
+      LineChart.gradient.append('svg:stop')
+        .attr('offset', '0%')
+        .attr('stop-color', '#fff')
+        .attr('stop-opacity', 1);
+
+      LineChart.gradient.append('svg:stop')
+        .attr('offset', '100%')
+        .attr('stop-color', '#b8e1fc')
+        .attr('stop-opacity', 1);
+
+
+      LineChart.chartArea = SvgChartsScene.svgContent.append('path').attr('name', 'chartArea')
+        .style('fill', 'url(#gradient)');
+
+      LineChart.chartLine = SvgChartsScene.svgContent.append('path').attr('name', 'chartLine');
     };
 
 
-    LineChart.render = function ($scope, historicalData) {
+    LineChart.cleanUp = function() {
+      LineChart.chartArea.attr('d', function() {});
+      LineChart.chartLine.attr('d', function() {});
+    };
 
-      if(!LineChart.chartLine) {
-        LineChart.chartLine = $scope.chartLine;
-      }
 
-      if(!LineChart.area) {
-        LineChart.area = $scope.chartArea;
-      }
-
+    LineChart.render = function () {
 
       var line = d3.svg.line()
         .x(function (d) {
-          return $scope.x(d.date);
+          return SvgChartsScene.x(d.date);
         })
         .y(function (d) {
-          return $scope.y(d.close);
+          return SvgChartsScene.y(d.close);
         });
 
       var area = d3.svg.area()
-        .x(function(d) { return $scope.x(d.date); })
-        .y0($scope.height)
-        .y1(function(d) { return $scope.y(d.close); });
+        .x(function(d) { return SvgChartsScene.x(d.date); })
+        .y0(SvgChartsScene.height)
+        .y1(function(d) { return SvgChartsScene.y(d.close); });
 
-      LineChart.area
-        .datum(historicalData)
+      LineChart.chartArea
+        .datum(SvgChartsScene.chartData)
         .transition()
         .duration(500)
         .ease("linear")
@@ -55,7 +72,7 @@ angular.module('svgChartsApp')
         .attr("d", area);
 
       LineChart.chartLine
-        .datum(historicalData)
+        .datum(SvgChartsScene.chartData)
         .transition()
         .duration(500)
         .ease("linear")
@@ -63,6 +80,7 @@ angular.module('svgChartsApp')
         .attr('d', line)
         .attr('style', 'fill: none;stroke: steelblue;stroke-width: 1.5px;');
     };
+
 
     return LineChart;
 

@@ -7,7 +7,7 @@
  * @restrict E
  *
  * @description
- * # baseChart
+ * # svgChart
  * Directive to create a line chart based off a Symbol's historical data.
  *
  * @param {Array} historicalData An array of historical data
@@ -16,93 +16,36 @@
 /*global d3 */
 
 angular.module('svgChartsApp')
-  .directive('svgChart', function ($window, $mdMedia, LineChart, OHLCChart) {
+  .directive('svgChart', function ($window, $mdMedia, SvgChartsScene, SvgChartsAxis, LineChart, OHLCChart, SvgChartsExtras) {
     return {
       scope: {
-        symbol: '=',
+        chartData: '=',
         selectedExtras: '=',
         selectedChart: '=',
-        positions: '='
+        subPlots: '='
       },
       template: '<svg class="svg-chart"><g name="svgContent" class="svg-chart-content"></g></svg>',
       link: function postLink($scope, element) {
 
-        $scope.svg = d3.select(element[0].querySelector('.svg-chart'))
-          .attr('name', 'svgChart')
-          .attr('style', 'background-color:#fff');
 
 
-        $scope.svgContent = $scope.svg.selectAll(".svg-chart-content");
-
-        //$scope.chartPositions = $scope.svgContent.append('path').attr('name', 'chartPositions');
-
-        // Add extra margin
-        $scope.margin = {top: 20, right: 40, bottom: 30, left: 0};
+        SvgChartsScene.init(element);
 
 
 
-
-        // Line chart
-        $scope.gradient = $scope.svgContent.append('svg:defs')
-          .append('svg:linearGradient')
-          .attr('id', 'gradient')
-          .attr('x1', '100%')
-          .attr('y1', '100%')
-          .attr('x2', '100%')
-          .attr('y2', '0%')
-          .attr('spreadMethod', 'pad');
-
-        $scope.gradient.append('svg:stop')
-          .attr('offset', '0%')
-          .attr('stop-color', '#fff')
-          .attr('stop-opacity', 1);
-
-        $scope.gradient.append('svg:stop')
-          .attr('offset', '100%')
-          .attr('stop-color', '#b8e1fc')
-          .attr('stop-opacity', 1);
-
-
-        $scope.chartArea = $scope.svgContent.append('path').attr('name', 'chartArea')
-          .style('fill', 'url(#gradient)');
-
-        $scope.chartLine = $scope.svgContent.append('path').attr('name', 'chartLine');
+        // Line chart elements
+        LineChart.init();
 
 
 
-
-
-
-
-        //// Extras
-        //$scope.bollingerBandArea = $scope.svgContent.append('svg:path').attr('class', 'bollinger-band-area')
-        //  .attr('style', 'fill: grey;').attr('fill-opacity', 0.2);
         //
-        //$scope.bollingerBandHigh = $scope.svgContent.append('svg:path').attr('class', 'band bollinger-band-high')
-        //  .attr('style', 'stroke: black; fill: none;');
-        //
-        //$scope.bollingerBandLow = $scope.svgContent.append('svg:path').attr('class', 'band bollinger-band-low')
-        //  .attr('style', 'stroke: black; fill: none;');
-        //
-        //$scope.movingAvgLine = $scope.svgContent.append('svg:path').attr('class', 'moving-average')
-        //  .attr('style', 'stroke: #FF9900; fill: none;');
-
-
-
+        SvgChartsExtras.init();
 
 
 
 
         // Axis
-        $scope.xAxis = $scope.svgContent.append('g').attr('name', 'xAxis');
-        //.attr('style', 'fill: none;stroke: rgba(0,0,0,0.54);shape-rendering: crispEdges;');
-
-        $scope.yAxis = $scope.svgContent.append('g').attr('name', 'yAxis');
-          //.attr('style', 'fill: none;stroke: rgba(0,0,0,0.54);shape-rendering: crispEdges;');
-
-        $scope.horizontalGrid = $scope.svgContent.append('g').attr('name', 'horizontalGrid');
-
-        $scope.verticalGrid = $scope.svgContent.append('g').attr('name', 'verticalGrid');
+        SvgChartsAxis.init();
 
 
 
@@ -112,119 +55,63 @@ angular.module('svgChartsApp')
 
 
 
-        $scope.parseDate = d3.time.format('%Y-%m-%d').parse;
-
-        $scope.renderBollingerBands = function () {
-
-          //var _movingSum;
-          var bollingerBandLow = d3.svg.line()
-            .x(function (d, i) {
-              return $scope.x(d.date);
-            })
-            .y(function (d, i) {
-              return $scope.y(d.Low);
-            })
-            .interpolate(movingAvg(3));
 
 
-          var bollingerBandArea = d3.svg.area()
-            .x(function(d) { return $scope.x(d.date); })
-            .y0(function(d) { return $scope.y(d.Low); })
-            .y1(function(d) { return $scope.y(d.High); })
-            .interpolate(movingAvg(3));
-
-          //var _movingSum;
-          var bollingerBandHigh = d3.svg.line()
-            .x(function (d, i) {
-              return $scope.x(d.date);
-            })
-            .y(function (d, i) {
-              return $scope.y(d.High);
-            })
-            .interpolate(movingAvg(3));
-
-          $scope.bollingerBandLow
-            .transition()
-            .duration(500)
-            .ease("linear")
-            .attr('d', bollingerBandLow($scope.symbol.historicalData));
-
-          $scope.bollingerBandHigh
-            .transition()
-            .duration(500)
-            .ease("linear")
-            .attr('d', bollingerBandHigh($scope.symbol.historicalData));
-
-          $scope.bollingerBandArea
-            .transition()
-            .duration(500)
-            .ease("linear")
-            .attr('d', bollingerBandArea($scope.symbol.historicalData));
-        };
-
-        $scope.getBollingerBands = function (n, k, data) {
-          var bands = []; //{ ma: 0, low: 0, high: 0 }
-          for (var i = n - 1, len = data.length; i < len; i++) {
-            var slice = data.slice(i + 1 - n, i);
-            var mean = d3.mean(slice, function (d) {
-              return d.close;
-            });
-            var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
-              return Math.pow(d.close - mean, 2);
-            })));
-            bands.push({
-              date: data[i].date,
-              ma: mean,
-              low: mean - (k * stdDev),
-              high: mean + (k * stdDev)
-            });
-          }
-          return bands;
-        };
-
-        $scope.resizeScene = function () {
+        // Functions
+        $scope.formatData = function () {
 
           // Format the historical data for d3
-          $scope.symbol.historicalData.forEach(function (d) {
-            d.date = $scope.parseDate(d.Date);
+          SvgChartsScene.chartData.forEach(function (d) {
+            d.date = d3.time.format('%Y-%m-%d').parse(d.Date);
             d.close = +d.Close;
             d.low = +d.Low;
           });
+        };
+
+
+
+
+
+        $scope.resizeScene = function () {
 
           // Get the width of the parent element
-          $scope.width = element.parent()[0].offsetWidth - $scope.margin.left - $scope.margin.right;
+          SvgChartsScene.width = element.parent()[0].offsetWidth - SvgChartsScene.margin.left - SvgChartsScene.margin.right;
           // Get the height of the parent element
-          $scope.height = element.parent()[0].offsetHeight - $scope.margin.top - $scope.margin.bottom;
+          SvgChartsScene.height = element.parent()[0].offsetHeight - SvgChartsScene.margin.top - SvgChartsScene.margin.bottom;
 
-          $scope.x = d3.time.scale()
-            .range([0, $scope.width]);
+          SvgChartsScene.x = d3.time.scale()
+            .range([0, SvgChartsScene.width]);
 
-          $scope.y = d3.scale.linear()
-            .range([$scope.height, 0]);
+          SvgChartsScene.y = d3.scale.linear()
+            .range([SvgChartsScene.height, 0]);
 
-          $scope.x.domain(d3.extent($scope.symbol.historicalData, function (d) {
+          SvgChartsScene.x.domain(d3.extent(SvgChartsScene.chartData, function (d) {
             return d.date;
           }));
 
-          var n = 20; // n-period of moving average
-          var k = 2;  // k times n-period standard deviation above/below moving average
+          //var n = 20; // n-period of moving average
+          //var k = 2;  // k times n-period standard deviation above/below moving average
+          //
+          //
+          //var bandsData = $scope.getBollingerBands(n, k, $scope.symbol.historicalData);
 
 
-          var bandsData = $scope.getBollingerBands(n, k, $scope.symbol.historicalData);
-
-
-          $scope.y.domain(d3.extent($scope.symbol.historicalData, function (d) {
+          SvgChartsScene.y.domain(d3.extent(SvgChartsScene.chartData, function (d) {
             return d.close;
           }));
 
 
-          $scope.svg
-            .attr('width', $scope.width + $scope.margin.left + $scope.margin.right)
-            .attr('height', $scope.height + $scope.margin.top + $scope.margin.bottom);
+          SvgChartsScene.svg
+            .attr('width', SvgChartsScene.width + SvgChartsScene.margin.left + SvgChartsScene.margin.right)
+            .attr('height', SvgChartsScene.height + SvgChartsScene.margin.top + SvgChartsScene.margin.bottom);
 
-          $scope.svgContent
-            .attr('transform', 'translate(' + $scope.margin.left + ',' + $scope.margin.top + ')');
+          SvgChartsScene.svgContent
+            .attr('transform', 'translate(' + SvgChartsScene.margin.left + ',' + SvgChartsScene.margin.top + ')');
         };
+
+
+
+
 
         $scope.renderPositions = function () {
           //var positions;
@@ -293,11 +180,19 @@ angular.module('svgChartsApp')
           //}
         };
 
+
+
+
+
+
+
+
+
         $scope.renderXYAxis = function () {
 
 
           var xAxis = d3.svg.axis()
-            .scale($scope.x)
+            .scale(SvgChartsScene.x)
             .orient('bottom');
 
 
@@ -311,7 +206,7 @@ angular.module('svgChartsApp')
           }
 
           var yAxis = d3.svg.axis()
-            .scale($scope.y)
+            .scale(SvgChartsScene.y)
             .orient('right');
 
 
@@ -322,7 +217,7 @@ angular.module('svgChartsApp')
 
           $scope.xAxis
             .attr('class', 'x axis')
-            .attr('transform', 'translate(0,' + ($scope.height) + ')')
+            .attr('transform', 'translate(0,' + (SvgChartsScene.height) + ')')
             .call(xAxis)
             .attr({
               'fill': 'none',
@@ -333,7 +228,7 @@ angular.module('svgChartsApp')
 
           $scope.yAxis
             .attr('class', 'y axis')
-            .attr('transform', 'translate(' + ($scope.width) + ',0)')
+            .attr('transform', 'translate(' + (SvgChartsScene.width) + ',0)')
             .call(yAxis)
             .attr({
               'fill': 'none',
@@ -354,7 +249,7 @@ angular.module('svgChartsApp')
 
           $scope.horizontalGrid.selectAll('line').remove();
 
-          var horizontalGridLine =  $scope.horizontalGrid.selectAll('line').data($scope.y.ticks(4));
+          var horizontalGridLine =  $scope.horizontalGrid.selectAll('line').data(SvgChartsScene.y.ticks(4));
 
           horizontalGridLine
             .enter()
@@ -363,12 +258,12 @@ angular.module('svgChartsApp')
             {
               'class': 'horizontalGrid',
               'x1': 0,
-              'x2': $scope.width,
+              'x2': SvgChartsScene.width,
               'y1': function (d) {
-                return $scope.y(d);
+                return SvgChartsScene.y(d);
               },
               'y2': function (d) {
-                return $scope.y(d);
+                return SvgChartsScene.y(d);
               },
               'fill': 'none',
               'shape-rendering': 'crispEdges',
@@ -382,7 +277,7 @@ angular.module('svgChartsApp')
           $scope.verticalGrid.selectAll('line').remove();
 
           var verticalGridLine = $scope.verticalGrid.selectAll('line')
-            .data($scope.x.ticks(12));
+            .data(SvgChartsScene.x.ticks(12));
 
           verticalGridLine
             .enter()
@@ -391,13 +286,13 @@ angular.module('svgChartsApp')
             {
               'class': 'verticalGrid',
               'x1': function (d) {
-                return $scope.x(d);
+                return SvgChartsScene.x(d);
               },
               'x2': function (d) {
-                return $scope.x(d);
+                return SvgChartsScene.x(d);
               },
-              'y1': -$scope.margin.top,
-              'y2': $scope.height,
+              'y1': -SvgChartsScene.margin.top,
+              'y2': SvgChartsScene.height,
               'fill': 'none',
               'shape-rendering': 'crispEdges',
               'stroke': '#C7C7C7',
@@ -415,50 +310,14 @@ angular.module('svgChartsApp')
 
         };
 
-        var movingAvg = function (n) {
-          return function (points) {
-            points = points.map(function (each, index, array) {
-              var to = index + n - 1;
-              var subSeq, sum;
-              if (to < points.length) {
-                subSeq = array.slice(index, to + 1);
-                sum = subSeq.reduce(function (a, b) {
-                  return [a[0] + b[0], a[1] + b[1]];
-                });
-                return sum.map(function (each) {
-                  return each / n;
-                });
-              }
-              return undefined;
-            });
-            points = points.filter(function (each) {
-              return typeof each !== 'undefined'
-            });
-            // Transform the points into a basis line
-            var pathDesc = d3.svg.line().interpolate('basis')(points);
-            // Remove the extra 'M'
-            return pathDesc.slice(1, pathDesc.length);
-          }
-        };
 
-        $scope.renderMovingAverage = function() {
 
-          //var _movingSum;
-          var movingAverageLine = d3.svg.line()
-            .x(function (d, i) {
-              return $scope.x(d.date);
-            })
-            .y(function (d, i) {
-              return $scope.y(d.close);
-            })
-            .interpolate(movingAvg(3));
 
-          $scope.movingAvgLine
-            .transition()
-            .duration(500)
-            .ease("linear")
-            .attr('d', movingAverageLine($scope.symbol.historicalData));
-        };
+
+
+
+
+
 
 
 
@@ -474,20 +333,24 @@ angular.module('svgChartsApp')
 
 
         $scope.render = function () {
+
+          // Make a reference to the data
+          SvgChartsScene.chartData = $scope.chartData;
+
+          $scope.formatData();
           $scope.resizeScene();
 
           if ($scope.selectedChart === 'ohlc-chart') {
             OHLCChart.cleanUp();
             LineChart.cleanUp();
-            OHLCChart.render($scope, $scope.symbol.historicalData);
+            OHLCChart.render();
           } else if ($scope.selectedChart === 'candlestick-chart') {
             OHLCChart.cleanUp();
             LineChart.cleanUp();
-            OHLCChart.render($scope, $scope.symbol.historicalData, true);
+            OHLCChart.render(true);
           } else {
-            LineChart.cleanUp();
             OHLCChart.cleanUp();
-            LineChart.render($scope, $scope.symbol.historicalData);
+            LineChart.render();
           }
 
 
@@ -538,12 +401,12 @@ angular.module('svgChartsApp')
          *
          */
         $scope.$watch(function () {
-          if ($scope.symbol && $scope.symbol.historicalData) {
-            return JSON.stringify([$scope.symbol.historicalData, $scope.selectedChart, $scope.selectedExtras]);
+          if ($scope.chartData) {
+            return JSON.stringify([$scope.chartData, $scope.selectedChart, $scope.selectedExtras]);
           }
         }, function () {
           // Make sure there is historical data
-          if ($scope.symbol && $scope.symbol.historicalData && $scope.symbol.historicalData.length > 0) {
+          if ($scope.chartData && $scope.chartData.length > 0) {
             $scope.render();
           }
         }, true);
@@ -560,7 +423,7 @@ angular.module('svgChartsApp')
          */
         angular.element($window).on('resize', function () {
           // Make sure there is historical data
-          if ($scope.symbol && $scope.symbol.historicalData && $scope.symbol.historicalData.length > 0) {
+          if ($scope.chartData && $scope.chartData.length > 0) {
             $scope.render();
           }
         });
