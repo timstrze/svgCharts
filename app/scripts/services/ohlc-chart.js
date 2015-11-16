@@ -21,6 +21,8 @@ angular.module('svgChartsApp')
         bars.selectAll('.close-tick').attr('d', function() {});
         bars.selectAll('rect').remove();
       }
+
+      cleanUpPopovers();
     };
 
     var line = d3.svg.line()
@@ -110,6 +112,13 @@ angular.module('svgChartsApp')
 
     };
 
+    var cleanUpPopovers = function() {
+      //popoverTextBox.remove();
+      //popoverTextBoxClose.remove();
+      //popoverText.remove();
+      //popoverTextBoxCloseText.remove();
+    };
+
     var applyCandlestick = function ($scope, bars) {
 
       var rect;
@@ -134,8 +143,7 @@ angular.module('svgChartsApp')
           popoverTextBoxY = m[1];
 
           if($scope.popoverText || $scope.popoverTextBox) {
-            $scope.popoverText.remove();
-            $scope.popoverTextBox.remove();
+            cleanUpPopovers();
           }
 
           if(popoverTextBoxY + popoverTextBoxHeight > $scope.height) {
@@ -159,7 +167,6 @@ angular.module('svgChartsApp')
               'stroke-width': '1px'
             });
 
-
           $scope.popoverText = $scope.svg.append('text')
             .attr("x", popoverTextBoxX)
             .attr("y", popoverTextBoxY)
@@ -175,6 +182,29 @@ angular.module('svgChartsApp')
             .attr("font-size", "20px")
             .attr("fill", "white")
             .call(wrap, 125, popoverTextBoxX);
+
+          $scope.popoverTextBoxCloseText = $scope.svg.append('text')
+            .attr("x", popoverTextBoxX + popoverTextBoxWidth - 20 + 5)
+            .attr("y", popoverTextBoxY + 20 - 4)
+            .text('X');
+
+          $scope.popoverTextBoxClose = $scope.svg.append('rect')
+            .attr("x", popoverTextBoxX + popoverTextBoxWidth - 20 + 2)
+            .attr("y", popoverTextBoxY + 2)
+            .attr("rx", 6)
+            .attr("ry", 6)
+            .attr("width", 16)
+            .attr("height", 16)
+            .attr("fill", "red")
+            .attr({
+              'stroke': 'black',
+              'stroke-width': '1px'
+            })
+            .attr('style', 'fill-opacity:0.3; cursor: pointer;')
+            .on('click', function() {
+              cleanUpPopovers();
+            });
+
         });
 
       rect
@@ -202,6 +232,11 @@ angular.module('svgChartsApp')
       //if(!OHLCChart.bars) {
         OHLCChart.bars = $scope.svgContent;
       //}
+
+      var popoverTextBox;
+      var popoverTextBoxClose;
+      var popoverText;
+      var popoverTextBoxCloseText;
 
       var bars = $scope.svgContent.selectAll('.bar')
         .data(historicalData, function (d) {

@@ -39,6 +39,10 @@ angular.module('svgChartsApp')
         // Add extra margin
         $scope.margin = {top: 20, right: 40, bottom: 30, left: 0};
 
+
+
+
+        // Line chart
         $scope.gradient = $scope.svgContent.append('svg:defs')
           .append('svg:linearGradient')
           .attr('id', 'gradient')
@@ -58,23 +62,38 @@ angular.module('svgChartsApp')
           .attr('stop-color', '#b8e1fc')
           .attr('stop-opacity', 1);
 
+
         $scope.chartArea = $scope.svgContent.append('path').attr('name', 'chartArea')
           .style('fill', 'url(#gradient)');
 
         $scope.chartLine = $scope.svgContent.append('path').attr('name', 'chartLine');
 
-        $scope.bollingerBandArea = $scope.svgContent.append('svg:path').attr('class', 'bollinger-band-area')
-          .attr('style', 'fill: grey;').attr('fill-opacity', 0.2);
 
-        $scope.bollingerBandHigh = $scope.svgContent.append('svg:path').attr('class', 'band bollinger-band-high')
-          .attr('style', 'stroke: black; fill: none;');
 
-        $scope.bollingerBandLow = $scope.svgContent.append('svg:path').attr('class', 'band bollinger-band-low')
-          .attr('style', 'stroke: black; fill: none;');
 
-        $scope.movingAvgLine = $scope.svgContent.append('svg:path').attr('class', 'moving-average')
-          .attr('style', 'stroke: #FF9900; fill: none;');
 
+
+
+        //// Extras
+        //$scope.bollingerBandArea = $scope.svgContent.append('svg:path').attr('class', 'bollinger-band-area')
+        //  .attr('style', 'fill: grey;').attr('fill-opacity', 0.2);
+        //
+        //$scope.bollingerBandHigh = $scope.svgContent.append('svg:path').attr('class', 'band bollinger-band-high')
+        //  .attr('style', 'stroke: black; fill: none;');
+        //
+        //$scope.bollingerBandLow = $scope.svgContent.append('svg:path').attr('class', 'band bollinger-band-low')
+        //  .attr('style', 'stroke: black; fill: none;');
+        //
+        //$scope.movingAvgLine = $scope.svgContent.append('svg:path').attr('class', 'moving-average')
+        //  .attr('style', 'stroke: #FF9900; fill: none;');
+
+
+
+
+
+
+
+        // Axis
         $scope.xAxis = $scope.svgContent.append('g').attr('name', 'xAxis');
         //.attr('style', 'fill: none;stroke: rgba(0,0,0,0.54);shape-rendering: crispEdges;');
 
@@ -84,6 +103,14 @@ angular.module('svgChartsApp')
         $scope.horizontalGrid = $scope.svgContent.append('g').attr('name', 'horizontalGrid');
 
         $scope.verticalGrid = $scope.svgContent.append('g').attr('name', 'verticalGrid');
+
+
+
+
+
+
+
+
 
         $scope.parseDate = d3.time.format('%Y-%m-%d').parse;
 
@@ -433,6 +460,19 @@ angular.module('svgChartsApp')
             .attr('d', movingAverageLine($scope.symbol.historicalData));
         };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
         $scope.render = function () {
           $scope.resizeScene();
 
@@ -450,19 +490,28 @@ angular.module('svgChartsApp')
             LineChart.render($scope, $scope.symbol.historicalData);
           }
 
-          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('moving-average') > -1) {
-            $scope.renderMovingAverage();
-          }else{
-            $scope.movingAvgLine.attr('d', function() {});
-          }
 
-          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('bollinger-bands') > -1) {
-            $scope.renderBollingerBands();
-          }else{
-            $scope.bollingerBandHigh.attr('d', function() {});
-            $scope.bollingerBandLow.attr('d', function() {});
-            $scope.bollingerBandArea.attr('d', function() {});
-          }
+
+
+
+          //if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('moving-average') > -1) {
+          //  $scope.renderMovingAverage();
+          //}else{
+          //  $scope.movingAvgLine.attr('d', function() {});
+          //}
+          //
+          //if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('bollinger-bands') > -1) {
+          //  $scope.renderBollingerBands();
+          //}else{
+          //  $scope.bollingerBandHigh.attr('d', function() {});
+          //  $scope.bollingerBandLow.attr('d', function() {});
+          //  $scope.bollingerBandArea.attr('d', function() {});
+          //}
+
+
+
+
+
 
           $scope.renderXYAxis();
 

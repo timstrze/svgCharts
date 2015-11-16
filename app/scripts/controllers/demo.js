@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name svgChartsApp.controller:MainController
+ * @name svgChartsApp.controller:DemoController
  * @description
- * # MainController
+ * # DemoController
  * Controller of the svgChartsApp
  */
 angular.module('svgChartsApp')
-  .controller('MainController', function ($http, Constants) {
+  .controller('DemoController', function ($http, Constants) {
 
     this.Constants = Constants;
 
@@ -18,9 +18,9 @@ angular.module('svgChartsApp')
 
     /**
      * @ngdoc function
-     * @name MainController.init
+     * @name DemoController.init
      * @module Main
-     * @methodOf svgChartsApp.controller:MainController
+     * @methodOf svgChartsApp.controller:DemoController
      * @kind function
      *
      * @description
@@ -30,8 +30,8 @@ angular.module('svgChartsApp')
     this.init = function () {
       var _this = this;
       this.symbol = {};
-      this.selectedChart = 'candlestick-chart';
-      this.selectedExtras = ['moving-average'];
+      this.selectedChart = 'line-chart';
+      this.selectedExtras = [];
 
       $http.get('json/symbols.json').then(function(results) {
         _this.Symbols = results.data.quote;

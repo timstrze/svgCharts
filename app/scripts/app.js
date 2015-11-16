@@ -22,7 +22,7 @@ angular
     $routeProvider
       .when('/svg-charts/demo', {
         templateUrl: 'views/routes/main.html',
-        controller: 'MainController',
+        controller: 'DemoController',
         controllerAs: 'ctrl'
       });
   });
