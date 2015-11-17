@@ -23,18 +23,20 @@ angular.module('svgChartsApp')
     SvgChartsScene.height = 100;
     SvgChartsScene.width = 100;
 
+    SvgChartsScene.parseDate = d3.time.format('%Y-%m-%d').parse;
+
 
     SvgChartsScene.x = function() {};
     SvgChartsScene.y = function() {};
 
     SvgChartsScene.init = function (element) {
 
-      SvgChartsScene.svg = d3.select(element[0].querySelector('.svg-chart'))
+      this.svg = d3.select(element[0].querySelector('.svg-chart'))
         .attr('name', 'svgChart')
         .attr('style', 'background-color:#fff');
 
 
-      SvgChartsScene.svgContent = SvgChartsScene.svg.selectAll(".svg-chart-content");
+      this.svgContent = this.svg.selectAll(".svg-chart-content");
 
     };
 

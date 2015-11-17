@@ -14,21 +14,24 @@ angular.module('svgChartsApp')
     var SvgChartsExtras = {};
 
     SvgChartsExtras.init = function () {
-      SvgChartsExtras.bollingerBandArea = SvgChartsScene.svgContent.append('svg:path')
+      this.bollingerBandArea = SvgChartsScene.svgContent.append('svg:path')
         .attr('class', 'bollinger-band-area')
         .attr('style', 'fill: grey;').attr('fill-opacity', 0.2);
 
-      SvgChartsExtras.bollingerBandHigh = SvgChartsScene.svgContent.append('svg:path')
+      this.bollingerBandHigh = SvgChartsScene.svgContent.append('svg:path')
         .attr('class', 'band bollinger-band-high')
         .attr('style', 'stroke: black; fill: none;');
 
-      SvgChartsExtras.bollingerBandLow = SvgChartsScene.svgContent.append('svg:path')
+      this.bollingerBandLow = SvgChartsScene.svgContent.append('svg:path')
         .attr('class', 'band bollinger-band-low')
         .attr('style', 'stroke: black; fill: none;');
 
-      SvgChartsExtras.movingAvgLine = SvgChartsScene.svgContent.append('svg:path')
+      this.movingAvgLine = SvgChartsScene.svgContent.append('svg:path')
         .attr('class', 'moving-average')
         .attr('style', 'stroke: #FF9900; fill: none;');
+
+      this.chartPlotPoints = SvgChartsScene.svgContent.append('path').attr('name', 'chartPlotPoints');
+
     };
 
 
@@ -146,70 +149,36 @@ angular.module('svgChartsApp')
     };
 
     SvgChartsExtras.renderDataPoints = function () {
-      //var positions;
-      //
-      //// Loop over the Positions
-      //angular.forEach($scope.positions, function (position) {
-      //  // Check to see if Symbols match
-      //  if (position.Symbol.Symbol.toLowerCase() === $scope.symbol.Symbol.toLowerCase()) {
-      //    positions = position;
-      //  }
-      //});
 
-      //if(positions) {
-      //  var x = d3.time.scale()
-      //    .range([0, $scope.width]);
-      //
-      //  var y = d3.scale.linear()
-      //    .range([$scope.height, 0]);
-      //
-      //  //var g = $scope.svg.append('g');
-      //  //
-      //  //var img = g.append('svg:image')
-      //  //  .attr('xlink:href', './images/icons/buy.svg')
-      //  //  .attr('width', 50)
-      //  //  .attr('height', 50)
-      //  //  .attr('x', 228)
-      //  //  .attr('y',53);
-      //
-      //
-      //  $scope.svgContent.selectAll('circle').remove();
-      //  $scope.svgContent.selectAll('circle')
-      //    .data(positions.buys)
-      //    .enter()
-      //    .append('circle')
-      //    .attr('cx', function(d, i) {
-      //      return x($scope.parseDate(d.created.split(' ')[0]));
-      //    })
-      //    .attr('cy', function (d) {
-      //      return y(d.ask);
-      //    })
-      //
-      //    .attr('r', function(d) {
-      //      return 10;
-      //    })
-      //    .attr('fill', '#3F51B5')
-      //    .attr('stroke', '#fff');
-      //
-      //  //$scope.svg.selectAll('text').remove();
-      //  //$scope.svg.selectAll('text')
-      //  //  .data(positions.buys)
-      //  //  .enter()
-      //  //  .append('text')
-      //  //  .attr('x', function(d, i) {
-      //  //    return x($scope.parseDate(d.created.split(' ')[0]));
-      //  //  })
-      //  //  .attr('y', function (d) {
-      //  //    return y(d.ask);
-      //  //  })
-      //  //  .text(function(d) {
-      //  //    return d.ask;
-      //  //  });
-      //
-      //}else{
-      //  //$scope.svg.selectAll('text').remove();
-      //  $scope.svgContent.selectAll('circle').remove()
-      //}
+      var dataPoints = SvgChartsScene.svgContent.selectAll('.data-points')
+          .data(SvgChartsScene.chartData);
+
+      dataPoints.enter()
+          .append('circle')
+          .attr('name', function (d) {
+            return d.Symbol
+          })
+          .on('click', function (d) {
+            console.log(d);
+          })
+          .attr('style', 'cursor: pointer;')
+          .attr('class', 'data-points')
+          .attr('fill', '#3F51B5')
+          .attr('stroke', '#fff');
+
+      dataPoints.exit().remove();
+
+      dataPoints
+        .attr('cx', function(d, i) {
+          return SvgChartsScene.x(d.date);
+        })
+        .attr('cy', function (d) {
+          return SvgChartsScene.y(d.close);
+        })
+        .attr('r', function(d) {
+          return 4;
+        });
+
     };
 
 

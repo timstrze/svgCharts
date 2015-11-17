@@ -106,6 +106,54 @@ angular.module('svgChartsApp')
     ];
 
 
+    Constants.subPlots = [
+      {
+        "symbol":"AXP",
+        "buys": [
+          {
+            "ask":"79.41",
+            "quantity":10,
+            "created":"2015-08-07 2:07:45 PM"
+          },
+          {
+            "ask":"79.61",
+            "quantity":9,
+            "created":"2015-08-07 7:05:45 PM"
+          }
+        ]
+      },
+      {
+        "symbol":"RCL",
+        "buys": [
+          {
+            "ask": "90.41",
+            "quantity": 92,
+            "created": "2015-08-06 2:05:45 PM"
+          }
+        ]
+      },
+      {
+        "symbol":"WFM",
+        "buys": [
+          {
+            "ask": "35.80",
+            "quantity": 52,
+            "created": "2015-08-03 2:05:45 PM"
+          }
+        ]
+      },
+      {
+        "symbol":"DIS",
+        "buys": [
+          {
+            "ask": "109.80",
+            "quantity": 52,
+            "created": "2015-08-01 2:05:45 PM"
+          }
+        ]
+      }
+    ];
+
     /**
      * @ngdoc function
      * @name Constants.chartTypes

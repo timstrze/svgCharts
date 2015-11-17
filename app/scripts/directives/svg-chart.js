@@ -61,11 +61,14 @@ angular.module('svgChartsApp')
         $scope.formatData = function () {
 
           // Format the historical data for d3
-          SvgChartsScene.chartData.forEach(function (d) {
-            d.date = d3.time.format('%Y-%m-%d').parse(d.Date);
-            d.close = +d.Close;
-            d.low = +d.Low;
+          SvgChartsScene.chartData = $scope.chartData.map(function (d) {
+            return {
+              date: SvgChartsScene.parseDate(d.Date),
+              close: +d.Close,
+              low: +d.Low
+            };
           });
+
         };
 
 
@@ -334,10 +337,8 @@ angular.module('svgChartsApp')
 
         $scope.render = function () {
 
-          // Make a reference to the data
-          SvgChartsScene.chartData = $scope.chartData;
-
           $scope.formatData();
+
           $scope.resizeScene();
 
           if ($scope.selectedChart === 'ohlc-chart') {
@@ -354,8 +355,11 @@ angular.module('svgChartsApp')
           }
 
 
-
-
+          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('data-points') > -1) {
+            SvgChartsExtras.renderDataPoints();
+          }else{
+            SvgChartsScene.svgContent.selectAll('.data-points').remove();
+          }
 
           //if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('moving-average') > -1) {
           //  $scope.renderMovingAverage();
@@ -373,10 +377,11 @@ angular.module('svgChartsApp')
 
 
 
+          $scope.previousSelectedChart = $scope.selectedChart;
+          $scope.previousSelectedExtras = $scope.selectedExtras;
 
 
-
-          $scope.renderXYAxis();
+          //$scope.renderXYAxis();
 
         };
 
