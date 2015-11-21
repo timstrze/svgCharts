@@ -1,0 +1,32 @@
+<md-content>
+  <div layout layout-sm="column">
+    <md-input-container flex>
+      <md-select ng-model="ctrl.selectedSymbol" placeholder="Select a Symbol"
+                 ng-change="ctrl.getSelectedSymbol(Symbol)">
+        <md-option ng-value="Symbol" ng-repeat="Symbol in ctrl.Symbols">{{ Symbol.Symbol }}</md-option>
+      </md-select>
+    </md-input-container>
+
+    <md-input-container flex>
+      <md-select ng-model="ctrl.selectedChart" placeholder="Select a chart">
+        <md-option ng-value="opt.slug" ng-repeat="opt in ctrl.Constants.chartTypes">{{ opt.title }}</md-option>
+      </md-select>
+    </md-input-container>
+
+    <md-input-container flex>
+      <md-select multiple ng-model="ctrl.selectedExtras" placeholder="Select extras">
+        <md-option ng-value="opt.slug" ng-repeat="opt in ctrl.Constants.chartExtras">{{ opt.title }}</md-option>
+      </md-select>
+    </md-input-container>
+  </div>
+
+</md-content>
+<md-content flex>
+  <div style="height:500px;">
+    <svg-chart sub-plots="ctrl.Constants.subPlots[0].buys"
+               selected-extras="ctrl.selectedExtras"
+               selected-chart="ctrl.selectedChart"
+               chart-data="ctrl.selectedSymbol.historicalData">
+    </svg-chart>
+  </div>
+</md-content>

@@ -16,7 +16,7 @@
 /*global d3 */
 
 angular.module('svgChartsApp')
-  .directive('svgChart', function ($window, $mdMedia, SvgChartsScene, SvgChartsAxis, LineChart, OHLCChart, SvgChartsExtras) {
+  .directive('svgChart', function ($window, $mdMedia, SvgChartsScene, SvgChartsAxis, SvgChartsCandlestickChart, SvgChartsLineChart, SvgChartsOHLCChart, SvgChartsExtras, SvgChartsSubPlot) {
     return {
       scope: {
         chartData: '=',
@@ -34,12 +34,25 @@ angular.module('svgChartsApp')
 
 
         // Line chart elements
-        LineChart.init();
+        SvgChartsLineChart.init();
 
+
+
+
+        // Line chart elements
+        SvgChartsOHLCChart.init();
+
+
+        SvgChartsCandlestickChart.init();
 
 
         //
         SvgChartsExtras.init();
+
+
+
+        //
+        SvgChartsSubPlot.init();
 
 
 
@@ -52,24 +65,39 @@ angular.module('svgChartsApp')
 
 
 
-
-
-
-
-
         // Functions
         $scope.formatData = function () {
 
-          // Format the historical data for d3
-          SvgChartsScene.chartData = $scope.chartData.map(function (d) {
-            return {
-              date: SvgChartsScene.parseDate(d.Date),
-              close: +d.Close,
-              low: +d.Low
-            };
-          });
+          if($scope.chartData && $scope.chartData.length) {
+            // Format the historical data for d3
+            SvgChartsScene.chartData = $scope.chartData.map(function (d) {
+              return {
+                date: SvgChartsScene.parseDate(d.Date),
+                open: +d.Open,
+                close: +d.Close,
+                high: +d.High,
+                low: +d.Low
+              };
+            });
+          }
+
+
+          if($scope.subPlots && $scope.subPlots.length) {
+            SvgChartsScene.subPlots = $scope.subPlots.map(function (d) {
+              return {
+                date: SvgChartsScene.parseDate(d.created.split(' ')[0]),
+                ask: +d.ask,
+                size: 8,
+                bodyText: d.created.split(' ')[0] + ': ' +d.ask,
+                strokeColor: 'white',
+                color: 'green'
+              };
+            });
+          }
 
         };
+
+
 
 
 
@@ -115,223 +143,29 @@ angular.module('svgChartsApp')
 
 
 
+      $scope.changeTheme = function (type) {
 
-        $scope.renderPositions = function () {
-          //var positions;
-          //
-          //// Loop over the Positions
-          //angular.forEach($scope.positions, function (position) {
-          //  // Check to see if Symbols match
-          //  if (position.Symbol.Symbol.toLowerCase() === $scope.symbol.Symbol.toLowerCase()) {
-          //    positions = position;
-          //  }
-          //});
+          if(type === 'dark') {
 
-          //if(positions) {
-          //  var x = d3.time.scale()
-          //    .range([0, $scope.width]);
-          //
-          //  var y = d3.scale.linear()
-          //    .range([$scope.height, 0]);
-          //
-          //  //var g = $scope.svg.append('g');
-          //  //
-          //  //var img = g.append('svg:image')
-          //  //  .attr('xlink:href', './images/icons/buy.svg')
-          //  //  .attr('width', 50)
-          //  //  .attr('height', 50)
-          //  //  .attr('x', 228)
-          //  //  .attr('y',53);
-          //
-          //
-          //  $scope.svgContent.selectAll('circle').remove();
-          //  $scope.svgContent.selectAll('circle')
-          //    .data(positions.buys)
-          //    .enter()
-          //    .append('circle')
-          //    .attr('cx', function(d, i) {
-          //      return x($scope.parseDate(d.created.split(' ')[0]));
-          //    })
-          //    .attr('cy', function (d) {
-          //      return y(d.ask);
-          //    })
-          //
-          //    .attr('r', function(d) {
-          //      return 10;
-          //    })
-          //    .attr('fill', '#3F51B5')
-          //    .attr('stroke', '#fff');
-          //
-          //  //$scope.svg.selectAll('text').remove();
-          //  //$scope.svg.selectAll('text')
-          //  //  .data(positions.buys)
-          //  //  .enter()
-          //  //  .append('text')
-          //  //  .attr('x', function(d, i) {
-          //  //    return x($scope.parseDate(d.created.split(' ')[0]));
-          //  //  })
-          //  //  .attr('y', function (d) {
-          //  //    return y(d.ask);
-          //  //  })
-          //  //  .text(function(d) {
-          //  //    return d.ask;
-          //  //  });
-          //
-          //}else{
-          //  //$scope.svg.selectAll('text').remove();
-          //  $scope.svgContent.selectAll('circle').remove()
-          //}
-        };
+            SvgChartsScene.svg.attr('style', 'background-color:#272727');
+
+            SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:white;');
+            SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:white;');
+
+            SvgChartsLineChart.gradientStart.attr('stop-color', '#272727');
 
 
+          }else {
+            SvgChartsScene.svg.attr('style', 'background-color:#fff');
 
+            SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
+            SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
 
+            SvgChartsLineChart.gradientStart.attr('stop-color', '#fff');
 
-
-
-
-
-        $scope.renderXYAxis = function () {
-
-
-          var xAxis = d3.svg.axis()
-            .scale(SvgChartsScene.x)
-            .orient('bottom');
-
-
-          //.innerTickSize(-$scope.height)
-          //.outerTickSize(0)
-          //.tickPadding(10);
-
-          // Only toggle the modal if small size
-          if ($mdMedia('sm') || $mdMedia('md')) {
-            xAxis.ticks(5);
           }
 
-          var yAxis = d3.svg.axis()
-            .scale(SvgChartsScene.y)
-            .orient('right');
-
-
-          //.innerTickSize(-$scope.width)
-          //.outerTickSize(0)
-          //.tickPadding(10);
-
-
-          $scope.xAxis
-            .attr('class', 'x axis')
-            .attr('transform', 'translate(0,' + (SvgChartsScene.height) + ')')
-            .call(xAxis)
-            .attr({
-              'fill': 'none',
-              'shape-rendering': 'crispEdges',
-              'stroke': 'rgba(0,0,0,0.54)'
-            });
-
-
-          $scope.yAxis
-            .attr('class', 'y axis')
-            .attr('transform', 'translate(' + (SvgChartsScene.width) + ',0)')
-            .call(yAxis)
-            .attr({
-              'fill': 'none',
-              'shape-rendering': 'crispEdges',
-              'stroke': 'rgba(0,0,0,0.54)'
-            });
-
-
-          //$scope.yAxisLines
-          //  //.attr('transform', 'translate(-20,'+h+')')
-          //  .call(d3.svg.axis()
-          //    .scale(xAxis)
-          //    .orient('bottom')
-          //    .ticks(4)
-          //    .tickSize(-$scope.height,0,0)
-          //    .tickFormat('')
-          //)
-
-          $scope.horizontalGrid.selectAll('line').remove();
-
-          var horizontalGridLine =  $scope.horizontalGrid.selectAll('line').data(SvgChartsScene.y.ticks(4));
-
-          horizontalGridLine
-            .enter()
-            .append('line')
-            .attr(
-            {
-              'class': 'horizontalGrid',
-              'x1': 0,
-              'x2': SvgChartsScene.width,
-              'y1': function (d) {
-                return SvgChartsScene.y(d);
-              },
-              'y2': function (d) {
-                return SvgChartsScene.y(d);
-              },
-              'fill': 'none',
-              'shape-rendering': 'crispEdges',
-              'stroke': '#C7C7C7',
-              'stroke-width': '1px',
-              'stroke-dasharray': '5, 5'
-            });
-
-          horizontalGridLine.exit().remove();
-
-          $scope.verticalGrid.selectAll('line').remove();
-
-          var verticalGridLine = $scope.verticalGrid.selectAll('line')
-            .data(SvgChartsScene.x.ticks(12));
-
-          verticalGridLine
-            .enter()
-            .append('line')
-            .attr(
-            {
-              'class': 'verticalGrid',
-              'x1': function (d) {
-                return SvgChartsScene.x(d);
-              },
-              'x2': function (d) {
-                return SvgChartsScene.x(d);
-              },
-              'y1': -SvgChartsScene.margin.top,
-              'y2': SvgChartsScene.height,
-              'fill': 'none',
-              'shape-rendering': 'crispEdges',
-              'stroke': '#C7C7C7',
-              'stroke-width': '1px',
-              'stroke-dasharray': '5, 5'
-            });
-
-          verticalGridLine.exit().remove();
-
-          $scope.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);').attr('stroke-width', '0px');
-          $scope.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);').attr('stroke-width', '0px');
-
-
-
-
-        };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      };
 
 
 
@@ -342,38 +176,53 @@ angular.module('svgChartsApp')
           $scope.resizeScene();
 
           if ($scope.selectedChart === 'ohlc-chart') {
-            OHLCChart.cleanUp();
-            LineChart.cleanUp();
-            OHLCChart.render();
-          } else if ($scope.selectedChart === 'candlestick-chart') {
-            OHLCChart.cleanUp();
-            LineChart.cleanUp();
-            OHLCChart.render(true);
-          } else {
-            OHLCChart.cleanUp();
-            LineChart.render();
+            SvgChartsCandlestickChart.cleanUp();
+            SvgChartsLineChart.cleanUp();
+            SvgChartsOHLCChart.render();
           }
+
+          else if ($scope.selectedChart === 'candlestick-chart') {
+            SvgChartsLineChart.cleanUp();
+            SvgChartsOHLCChart.cleanUp();
+            SvgChartsCandlestickChart.render();
+          }
+
+          else {
+            SvgChartsCandlestickChart.cleanUp();
+            SvgChartsOHLCChart.cleanUp();
+            SvgChartsLineChart.render();
+          }
+
+
 
 
           if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('data-points') > -1) {
             SvgChartsExtras.renderDataPoints();
           }else{
-            SvgChartsScene.svgContent.selectAll('.data-points').remove();
+
+            SvgChartsExtras.cleanUpDataPoints();
           }
 
-          //if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('moving-average') > -1) {
-          //  $scope.renderMovingAverage();
-          //}else{
-          //  $scope.movingAvgLine.attr('d', function() {});
-          //}
-          //
-          //if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('bollinger-bands') > -1) {
-          //  $scope.renderBollingerBands();
-          //}else{
-          //  $scope.bollingerBandHigh.attr('d', function() {});
-          //  $scope.bollingerBandLow.attr('d', function() {});
-          //  $scope.bollingerBandArea.attr('d', function() {});
-          //}
+          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('moving-average') > -1) {
+            SvgChartsExtras.renderMovingAverage();
+          }else{
+            SvgChartsExtras.movingAverageCleanup();
+          }
+
+          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('bollinger-bands') > -1) {
+            SvgChartsExtras.renderBollingerBands();
+          }else{
+            SvgChartsExtras.bollingerBandsCleanup();
+          }
+
+          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('sub-plot-points') > -1) {
+            SvgChartsSubPlot.renderSubPlots();
+          }else{
+            SvgChartsSubPlot.cleanUp();
+          }
+
+
+
 
 
 
@@ -381,7 +230,14 @@ angular.module('svgChartsApp')
           $scope.previousSelectedExtras = $scope.selectedExtras;
 
 
-          //$scope.renderXYAxis();
+          SvgChartsAxis.renderXYAxis();
+
+
+          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('dark-theme') > -1) {
+            $scope.changeTheme('dark');
+          }else{
+            $scope.changeTheme('white');
+          }
 
         };
 
@@ -407,7 +263,7 @@ angular.module('svgChartsApp')
          */
         $scope.$watch(function () {
           if ($scope.chartData) {
-            return JSON.stringify([$scope.chartData, $scope.selectedChart, $scope.selectedExtras]);
+            return JSON.stringify([$scope.chartData, $scope.subPlots, $scope.selectedChart, $scope.selectedExtras]);
           }
         }, function () {
           // Make sure there is historical data

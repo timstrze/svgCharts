@@ -9,7 +9,7 @@
  *
  */
 angular.module('svgChartsApp')
-  .factory('SvgChartsSubPlot', function (SvgChartsScene) {
+  .factory('SvgChartsSubPlot', function (SvgChartsScene, Constants) {
 
     var SvgChartsSubPlot = {};
 
@@ -19,7 +19,7 @@ angular.module('svgChartsApp')
 
     /**
      * @ngdoc function
-     * @name SvgChartsSubPlot.http
+     * @name SvgChartsSubPlot.init
      * @methodOf svgChartsApp.service:SvgChartsSubPlot
      *
      * @description
@@ -28,9 +28,74 @@ angular.module('svgChartsApp')
      * @param {String} ID of the SvgChartsSubPlot
      */
     SvgChartsSubPlot.init =function() {
-      $scope.chartPositions = SvgChartsScene.svgContent.append('path').attr('name', 'chartPositions');
+
+      this.subPlotPoints = SvgChartsScene.svgContent.append('g')
+        .attr('name', 'subPlotPoints');
+    };
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsSubPlot.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsSubPlot
+     *
+     * @description
+     * Public access to the GET, PUT, and POST methods
+     *
+     * @param {String} ID of the SvgChartsSubPlot
+     */
+    SvgChartsSubPlot.cleanUp =function() {
+
+      this.subPlotPoints.selectAll('.subplot-points').remove();
 
     };
+
+
+
+
+    SvgChartsSubPlot.renderSubPlots = function () {
+
+      var subPlots = SvgChartsScene.subPlots;
+
+      if(subPlots && subPlots.length > 0) {
+
+        var subPlotCircles = this.subPlotPoints.selectAll('.subplot-points')
+          .data(subPlots);
+
+        subPlotCircles
+          .enter()
+          .append('circle')
+          .attr('style', 'cursor: pointer;')
+          .attr('class', 'subplot-points')
+          .on('click', function(d) {
+            console.log(d);
+          });
+
+        subPlotCircles.exit().remove();
+
+        subPlotCircles
+          .transition()
+          .duration(500)
+          .ease("linear")
+          .attr('fill', function (d) {
+            return d.color || 'black';
+          })
+          .attr('stroke', function (d) {
+            return d.strokeColor || '#fff';
+          })
+          .attr('cx', function(d) {
+            return SvgChartsScene.x(d.date);
+          })
+          .attr('cy', function (d) {
+            return SvgChartsScene.y(d.ask);
+          })
+          .attr('r', function(d) {
+            return d.size || 4;
+          });
+      }
+    };
+
 
 
     return SvgChartsSubPlot;

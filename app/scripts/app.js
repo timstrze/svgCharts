@@ -21,7 +21,7 @@ angular
   .config(function ($routeProvider) {
     $routeProvider
       .when('/svg-charts/demo', {
-        templateUrl: 'views/routes/main.html',
+        templateUrl: 'views/demo/demo.html',
         controller: 'DemoController',
         controllerAs: 'ctrl'
       });

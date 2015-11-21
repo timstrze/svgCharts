@@ -30,9 +30,16 @@ angular.module('svgChartsApp')
         .attr('class', 'moving-average')
         .attr('style', 'stroke: #FF9900; fill: none;');
 
-      this.chartPlotPoints = SvgChartsScene.svgContent.append('path').attr('name', 'chartPlotPoints');
+      this.chartPlotPoints = SvgChartsScene.svgContent.append('g')
+        .attr('name', 'chartPlotPoints');
 
     };
+
+
+
+
+
+
 
 
     var movingAvg = function (n) {
@@ -61,74 +68,90 @@ angular.module('svgChartsApp')
       }
     };
 
+    SvgChartsExtras.movingAverageCleanup = function() {
+      this.movingAvgLine.attr('d', function() {});
+    };
+
     SvgChartsExtras.renderMovingAverage = function() {
 
-      //var _movingSum;
       var movingAverageLine = d3.svg.line()
-        .x(function (d, i) {
+        .x(function (d) {
           return SvgChartsScene.x(d.date);
         })
-        .y(function (d, i) {
+        .y(function (d) {
           return SvgChartsScene.y(d.close);
         })
         .interpolate(movingAvg(3));
 
-      SvgChartsScene.movingAvgLine
+      this.movingAvgLine
         .transition()
         .duration(500)
         .ease("linear")
         .attr('d', movingAverageLine(SvgChartsScene.chartData));
     };
 
+
+
+
+
+
+
+
+
     SvgChartsExtras.renderBollingerBands = function () {
 
       //var _movingSum;
       var bollingerBandLow = d3.svg.line()
-        .x(function (d, i) {
+        .x(function (d) {
           return SvgChartsScene.x(d.date);
         })
-        .y(function (d, i) {
-          return SvgChartsScene.y(d.Low);
+        .y(function (d) {
+          return SvgChartsScene.y(d.low);
         })
         .interpolate(movingAvg(3));
 
 
       var bollingerBandArea = d3.svg.area()
         .x(function(d) { return SvgChartsScene.x(d.date); })
-        .y0(function(d) { return SvgChartsScene.y(d.Low); })
-        .y1(function(d) { return SvgChartsScene.y(d.High); })
+        .y0(function(d) { return SvgChartsScene.y(d.low); })
+        .y1(function(d) { return SvgChartsScene.y(d.high); })
         .interpolate(movingAvg(3));
 
-      //var _movingSum;
       var bollingerBandHigh = d3.svg.line()
-        .x(function (d, i) {
-          return $scope.x(d.date);
+        .x(function (d) {
+          return SvgChartsScene.x(d.date);
         })
-        .y(function (d, i) {
-          return $scope.y(d.High);
+        .y(function (d) {
+          return SvgChartsScene.y(d.high);
         })
         .interpolate(movingAvg(3));
 
-      $scope.bollingerBandLow
+      this.bollingerBandLow
         .transition()
         .duration(500)
         .ease("linear")
-        .attr('d', bollingerBandLow($scope.symbol.historicalData));
+        .attr('d', bollingerBandLow(SvgChartsScene.chartData));
 
-      $scope.bollingerBandHigh
+      this.bollingerBandHigh
         .transition()
         .duration(500)
         .ease("linear")
-        .attr('d', bollingerBandHigh($scope.symbol.historicalData));
+        .attr('d', bollingerBandHigh(SvgChartsScene.chartData));
 
-      $scope.bollingerBandArea
+      this.bollingerBandArea
         .transition()
         .duration(500)
         .ease("linear")
-        .attr('d', bollingerBandArea($scope.symbol.historicalData));
+        .attr('d', bollingerBandArea(SvgChartsScene.chartData));
     };
 
-    SvgChartsExtras.getBollingerBands = function (n, k, data) {
+    SvgChartsExtras.bollingerBandsCleanup = function () {
+      this.bollingerBandHigh.attr('d', function() {});
+      this.bollingerBandLow.attr('d', function() {});
+      this.bollingerBandArea.attr('d', function() {});
+    };
+
+    var getBollingerBands = function (n, k, data) {
       var bands = []; //{ ma: 0, low: 0, high: 0 }
       for (var i = n - 1, len = data.length; i < len; i++) {
         var slice = data.slice(i + 1 - n, i);
@@ -148,9 +171,20 @@ angular.module('svgChartsApp')
       return bands;
     };
 
+
+
+
+
+
+
+    SvgChartsExtras.cleanUpDataPoints = function () {
+      this.chartPlotPoints.selectAll('.data-points').remove();
+
+    };
+
     SvgChartsExtras.renderDataPoints = function () {
 
-      var dataPoints = SvgChartsScene.svgContent.selectAll('.data-points')
+      var dataPoints = this.chartPlotPoints.selectAll('.data-points')
           .data(SvgChartsScene.chartData);
 
       dataPoints.enter()
@@ -169,6 +203,9 @@ angular.module('svgChartsApp')
       dataPoints.exit().remove();
 
       dataPoints
+        .transition()
+        .duration(500)
+        .ease("linear")
         .attr('cx', function(d, i) {
           return SvgChartsScene.x(d.date);
         })

@@ -84,6 +84,10 @@ angular.module('svgChartsApp')
       {
         title: 'Comparison Chart',
         slug: 'comparison-chart'
+      },
+      {
+        title: 'Volume',
+        slug: 'volume'
       }
     ];
 
@@ -111,14 +115,19 @@ angular.module('svgChartsApp')
         "symbol":"AXP",
         "buys": [
           {
-            "ask":"79.41",
+            "ask":"76.42",
             "quantity":10,
-            "created":"2015-08-07 2:07:45 PM"
+            "created":"2015-8-31 2:07:45 PM"
           },
           {
-            "ask":"79.61",
+            "ask":"77.1",
             "quantity":9,
-            "created":"2015-08-07 7:05:45 PM"
+            "created":"2015-10-07 7:05:45 PM"
+          },
+          {
+            "ask":"75.91",
+            "quantity":9,
+            "created":"2015-09-18 7:05:45 PM"
           }
         ]
       },
@@ -179,8 +188,16 @@ angular.module('svgChartsApp')
         slug: 'data-points'
       },
       {
-        title: 'Volume',
-        slug: 'volume'
+        title: 'Sub Plot Points',
+        slug: 'sub-plot-points'
+      },
+      {
+        title: 'Split View',
+        slug: 'split-view'
+      },
+      {
+        title: 'Dark Theme',
+        slug: 'dark-theme'
       }
     ];
 
