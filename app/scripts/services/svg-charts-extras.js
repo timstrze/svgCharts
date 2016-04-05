@@ -40,8 +40,6 @@ angular.module('svgChartsApp')
 
 
 
-
-
     var movingAvg = function (n) {
       return function (points) {
         points = points.map(function (each, index, array) {

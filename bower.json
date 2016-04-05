@@ -14,7 +14,6 @@
     "angular-resource": "latest",
     "angular-route": "latest",
     "angular-sanitize": "latest",
-    "angular-touch": "latest",
     "angular-material": "latest",
     "d3": "~3.5.6",
     "angular-material-icons": "latest"

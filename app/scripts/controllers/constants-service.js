@@ -82,12 +82,8 @@ angular.module('svgChartsApp')
         slug: 'swing-chart'
       },
       {
-        title: 'Comparison Chart',
-        slug: 'comparison-chart'
-      },
-      {
         title: 'Volume',
-        slug: 'volume'
+        slug: 'volume-chart'
       }
     ];
 

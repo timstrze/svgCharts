@@ -14,7 +14,6 @@ angular
     'ngResource',
     'ngRoute',
     'ngSanitize',
-    'ngTouch',
     'ngMaterial',
     'ngMdIcons'
   ])

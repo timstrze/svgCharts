@@ -41,7 +41,6 @@ angular.module('svgChartsApp')
     };
 
 
-
     var applyCandlestick = function (bars) {
 
       var rect;
@@ -52,8 +51,7 @@ angular.module('svgChartsApp')
       });
 
       rect.enter().append('rect')
-        .classed('candlestick-rectangles', true)
-        .attr('style', 'cursor:pointer;');
+        .classed('candlestick-rectangles', true);
 
       rect.exit().remove();
 

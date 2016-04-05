@@ -16,7 +16,9 @@
 /*global d3 */
 
 angular.module('svgChartsApp')
-  .directive('svgChart', function ($window, $mdMedia, SvgChartsScene, SvgChartsAxis, SvgChartsCandlestickChart, SvgChartsLineChart, SvgChartsOHLCChart, SvgChartsExtras, SvgChartsSubPlot) {
+  .directive('svgChart', function ($window, $mdMedia, SvgChartsScene, SvgChartsAxis, SvgChartsCandlestickChart,
+                                   SvgChartsLineChart, SvgChartsOHLCChart, SvgChartsExtras,
+                                   SvgChartsSubPlot, SvgChartsVolumeChart, SvgChartsKagiChart) {
     return {
       scope: {
         chartData: '=',
@@ -28,15 +30,19 @@ angular.module('svgChartsApp')
       link: function postLink($scope, element) {
 
 
-
         SvgChartsScene.init(element);
-
 
 
         // Line chart elements
         SvgChartsLineChart.init();
 
 
+        // Line chart elements
+        SvgChartsVolumeChart.init();
+
+
+        // Line chart elements
+        SvgChartsKagiChart.init();
 
 
         // Line chart elements
@@ -50,29 +56,23 @@ angular.module('svgChartsApp')
         SvgChartsExtras.init();
 
 
-
         //
         SvgChartsSubPlot.init();
-
-
 
 
         // Axis
         SvgChartsAxis.init();
 
 
-
-
-
-
         // Functions
         $scope.formatData = function () {
 
-          if($scope.chartData && $scope.chartData.length) {
+          if ($scope.chartData && $scope.chartData.length) {
             // Format the historical data for d3
             SvgChartsScene.chartData = $scope.chartData.map(function (d) {
               return {
                 date: SvgChartsScene.parseDate(d.Date),
+                volume: parseInt(d.Volume),
                 open: +d.Open,
                 close: +d.Close,
                 high: +d.High,
@@ -82,13 +82,13 @@ angular.module('svgChartsApp')
           }
 
 
-          if($scope.subPlots && $scope.subPlots.length) {
+          if ($scope.subPlots && $scope.subPlots.length) {
             SvgChartsScene.subPlots = $scope.subPlots.map(function (d) {
               return {
                 date: SvgChartsScene.parseDate(d.created.split(' ')[0]),
                 ask: +d.ask,
                 size: 8,
-                bodyText: d.created.split(' ')[0] + ': ' +d.ask,
+                bodyText: d.created.split(' ')[0] + ': ' + d.ask,
                 strokeColor: 'white',
                 color: 'green'
               };
@@ -96,11 +96,6 @@ angular.module('svgChartsApp')
           }
 
         };
-
-
-
-
-
 
 
         $scope.resizeScene = function () {
@@ -141,11 +136,9 @@ angular.module('svgChartsApp')
         };
 
 
+        $scope.changeTheme = function (type) {
 
-
-      $scope.changeTheme = function (type) {
-
-          if(type === 'dark') {
+          if (type === 'dark') {
 
             SvgChartsScene.svg.attr('style', 'background-color:#272727');
 
@@ -155,7 +148,7 @@ angular.module('svgChartsApp')
             SvgChartsLineChart.gradientStart.attr('stop-color', '#272727');
 
 
-          }else {
+          } else {
             SvgChartsScene.svg.attr('style', 'background-color:#fff');
 
             SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
@@ -165,8 +158,7 @@ angular.module('svgChartsApp')
 
           }
 
-      };
-
+        };
 
 
         $scope.render = function () {
@@ -176,54 +168,69 @@ angular.module('svgChartsApp')
           $scope.resizeScene();
 
           if ($scope.selectedChart === 'ohlc-chart') {
+            SvgChartsKagiChart.cleanUp();
+            SvgChartsVolumeChart.cleanUp();
             SvgChartsCandlestickChart.cleanUp();
             SvgChartsLineChart.cleanUp();
             SvgChartsOHLCChart.render();
           }
 
           else if ($scope.selectedChart === 'candlestick-chart') {
+            SvgChartsKagiChart.cleanUp();
+            SvgChartsVolumeChart.cleanUp();
             SvgChartsLineChart.cleanUp();
             SvgChartsOHLCChart.cleanUp();
             SvgChartsCandlestickChart.render();
           }
 
+          else if ($scope.selectedChart === 'kagi-chart') {
+            SvgChartsVolumeChart.cleanUp();
+            SvgChartsLineChart.cleanUp();
+            SvgChartsOHLCChart.cleanUp();
+            SvgChartsCandlestickChart.cleanUp();
+            SvgChartsKagiChart.render();
+          }
+
+          else if ($scope.selectedChart === 'volume-chart') {
+            SvgChartsKagiChart.cleanUp();
+            SvgChartsLineChart.cleanUp();
+            SvgChartsOHLCChart.cleanUp();
+            SvgChartsCandlestickChart.cleanUp();
+            SvgChartsVolumeChart.render();
+          }
+
           else {
+            SvgChartsKagiChart.cleanUp();
+            SvgChartsVolumeChart.cleanUp();
             SvgChartsCandlestickChart.cleanUp();
             SvgChartsOHLCChart.cleanUp();
             SvgChartsLineChart.render();
           }
 
 
-
-
-          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('data-points') > -1) {
+          if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('data-points') > -1) {
             SvgChartsExtras.renderDataPoints();
-          }else{
-
+          } else {
             SvgChartsExtras.cleanUpDataPoints();
           }
 
-          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('moving-average') > -1) {
+          if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('moving-average') > -1) {
             SvgChartsExtras.renderMovingAverage();
-          }else{
+          } else {
             SvgChartsExtras.movingAverageCleanup();
           }
 
-          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('bollinger-bands') > -1) {
+          if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('bollinger-bands') > -1) {
             SvgChartsExtras.renderBollingerBands();
-          }else{
+          } else {
             SvgChartsExtras.bollingerBandsCleanup();
           }
 
-          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('sub-plot-points') > -1) {
+          if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('sub-plot-points') > -1) {
             SvgChartsSubPlot.renderSubPlots();
-          }else{
+          } else {
             SvgChartsSubPlot.cleanUp();
           }
-
-
-
-
 
 
           $scope.previousSelectedChart = $scope.selectedChart;
@@ -233,23 +240,13 @@ angular.module('svgChartsApp')
           SvgChartsAxis.renderXYAxis();
 
 
-          if($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('dark-theme') > -1) {
+          if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('dark-theme') > -1) {
             $scope.changeTheme('dark');
-          }else{
+          } else {
             $scope.changeTheme('white');
           }
 
         };
-
-
-
-
-
-
-
-
-
-
 
 
         /**
