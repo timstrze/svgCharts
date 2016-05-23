@@ -50,6 +50,7 @@ angular.module('svgChartsApp')
     return {
       scope: {
         chartData: '=',
+        selectedTheme: '=',
         selectedExtras: '=',
         selectedChart: '=',
         subPlots: '='
@@ -164,27 +165,27 @@ angular.module('svgChartsApp')
         };
 
 
-        $scope.changeTheme = function (type) {
+        $scope.changeTheme = function (backgroundColor, fontColor) {
 
-          if (type === 'dark') {
+          // if (type === 'dark') {
 
-            SvgChartsScene.svg.attr('style', 'background-color:#272727');
+            SvgChartsScene.svg.attr('style', 'background-color:' + backgroundColor);
 
-            SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:white;');
-            SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:white;');
+            SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:' + fontColor);
+            SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:' + fontColor);
 
-            SvgChartsLineChart.gradientStart.attr('stop-color', '#272727');
+            SvgChartsLineChart.gradientStart.attr('stop-color', backgroundColor);
 
 
-          } else {
-            SvgChartsScene.svg.attr('style', 'background-color:#fff');
-
-            SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
-            SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
-
-            SvgChartsLineChart.gradientStart.attr('stop-color', '#fff');
-
-          }
+          // } else {
+          //   SvgChartsScene.svg.attr('style', 'background-color:#fff');
+          //
+          //   SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
+          //   SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
+          //
+          //   SvgChartsLineChart.gradientStart.attr('stop-color', '#fff');
+          //
+          // }
 
         };
 
@@ -268,10 +269,10 @@ angular.module('svgChartsApp')
           SvgChartsAxis.renderXYAxis();
 
 
-          if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('dark-theme') > -1) {
-            $scope.changeTheme('dark');
+          if ($scope.selectedTheme && $scope.selectedTheme.background && $scope.selectedTheme.font) {
+            $scope.changeTheme($scope.selectedTheme.background, $scope.selectedTheme.font);
           } else {
-            $scope.changeTheme('white');
+            $scope.changeTheme('#FFFFFF', '#000000');
           }
 
         };
@@ -288,7 +289,7 @@ angular.module('svgChartsApp')
          */
         $scope.$watch(function () {
           if ($scope.chartData) {
-            return JSON.stringify([$scope.chartData, $scope.subPlots, $scope.selectedChart, $scope.selectedExtras]);
+            return JSON.stringify([$scope.chartData, $scope.subPlots, $scope.selectedChart, $scope.selectedExtras, $scope.selectedTheme]);
           }
         }, function () {
           // Make sure there is historical data
@@ -326,20 +327,23 @@ angular.module('svgChartsApp')
  * # SvgChartsCandlestickChart
  * Factory in the svgChartsApp.
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsCandlestickChart', function (SvgChartsScene) {
 
     var SvgChartsCandlestickChart = {};
 
-    SvgChartsCandlestickChart.init = function() {
+    SvgChartsCandlestickChart.init = function () {
 
       this.candleStickContainer = SvgChartsScene.svgContent.append('g')
-        .attr('name', 'candleStickBars')
+        .attr('name', 'candleStickBars');
     };
 
-    SvgChartsCandlestickChart.cleanUp = function() {
+    SvgChartsCandlestickChart.cleanUp = function () {
 
-      if(this.bars) {
+      if (this.bars) {
         this.bars.remove();
         this.bars.selectAll('.candlestick-rectangles').remove();
       }
@@ -355,7 +359,7 @@ angular.module('svgChartsApp')
       });
 
 
-    var isUpDay = function(d) {
+    var isUpDay = function (d) {
       return d.close > d.open;
     };
 
@@ -386,9 +390,7 @@ angular.module('svgChartsApp')
         })
         .attr('width', rectangleWidth * 2)
         .attr('height', function (d) {
-          return isUpDay(d)
-            ? SvgChartsScene.y(d.open) - SvgChartsScene.y(d.close)
-            : SvgChartsScene.y(d.close) - SvgChartsScene.y(d.open);
+          return isUpDay(d) ? SvgChartsScene.y(d.open) - SvgChartsScene.y(d.close) : SvgChartsScene.y(d.close) - SvgChartsScene.y(d.open);
         });
 
     };
@@ -407,8 +409,8 @@ angular.module('svgChartsApp')
       this.bars.exit().remove();
 
       this.bars.attr({
-        'fill': function(d) {
-          return  isUpDay(d) ? 'green' : 'red';
+        'fill': function (d) {
+          return isUpDay(d) ? 'green' : 'red';
         }
       });
 
@@ -426,13 +428,13 @@ angular.module('svgChartsApp')
         .ease("linear")
         .attr('d', function (d) {
           return line([
-            { x: SvgChartsScene.x(d.date), y: SvgChartsScene.y(d.high) },
-            { x: SvgChartsScene.x(d.date), y: SvgChartsScene.y(d.low) }
+            {x: SvgChartsScene.x(d.date), y: SvgChartsScene.y(d.high)},
+            {x: SvgChartsScene.x(d.date), y: SvgChartsScene.y(d.low)}
           ]);
         })
         .attr({
-          'stroke': function(d) {
-            return  isUpDay(d) ? 'green' : 'red';
+          'stroke': function (d) {
+            return isUpDay(d) ? 'green' : 'red';
           }
         });
 
@@ -454,6 +456,9 @@ angular.module('svgChartsApp')
  * # SvgChartsLineChart
  * Factory in the svgChartsApp.
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsLineChart', function (SvgChartsScene) {
 
@@ -543,6 +548,9 @@ angular.module('svgChartsApp')
  * # SvgChartsOHLCChart
  * Factory in the svgChartsApp.
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsOHLCChart', function (SvgChartsScene) {
 
@@ -551,7 +559,7 @@ angular.module('svgChartsApp')
     SvgChartsOHLCChart.init = function() {
 
       this.ohlcContainer = SvgChartsScene.svgContent.append('g')
-        .attr('name', 'ohlcBars')
+        .attr('name', 'ohlcBars');
 
     };
 
@@ -697,6 +705,9 @@ angular.module('svgChartsApp')
  * # SvgChartsKagiChart
  * Factory in the svgChartsApp.
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsKagiChart', function (SvgChartsScene) {
 
@@ -715,50 +726,50 @@ angular.module('svgChartsApp')
 
 
     SvgChartsKagiChart.render = function () {
-      var _this = this;
-
-      var test = [
-        135,
-        132,
-        128,
-        133,
-        130,
-        129,
-        127,
-        134,
-        139,
-        137,
-        145,
-        158,
-        147,
-        143,
-        150,
-        149,
-        160,
-        164,
-        167,
-        156,
-        165,
-        168,
-        171,
-        173,
-        169,
-        177,
-        180,
-        176,
-        170,
-        165,
-        169,
-        173,
-        170,
-        170,
-        168,
-        165,
-        171,
-        175,
-        179,
-        175
-      ];
+      // var _this = this;
+      //
+      // var test = [
+      //   135,
+      //   132,
+      //   128,
+      //   133,
+      //   130,
+      //   129,
+      //   127,
+      //   134,
+      //   139,
+      //   137,
+      //   145,
+      //   158,
+      //   147,
+      //   143,
+      //   150,
+      //   149,
+      //   160,
+      //   164,
+      //   167,
+      //   156,
+      //   165,
+      //   168,
+      //   171,
+      //   173,
+      //   169,
+      //   177,
+      //   180,
+      //   176,
+      //   170,
+      //   165,
+      //   169,
+      //   173,
+      //   170,
+      //   170,
+      //   168,
+      //   165,
+      //   171,
+      //   175,
+      //   179,
+      //   175
+      // ];
 
       //var line = d3.svg.line()
       //  .x(function (d) {
@@ -798,7 +809,7 @@ angular.module('svgChartsApp')
       //var sceneWidth = SvgChartsScene.width;
       //var sceneHeight = SvgChartsScene.height;
 
-      var reversalAmount = SvgChartsScene.chartData.reverse()[0].close * .03;
+      var reversalAmount = SvgChartsScene.chartData.reverse()[0].close * parseFloat('.03');
 
       var previousReversal = SvgChartsScene.chartData.reverse()[0].close;
 
@@ -892,119 +903,119 @@ angular.module('svgChartsApp')
 
     var SvgChartsPopover = {};
 
-    SvgChartsPopover.test = function(rect) {
-
-      var popoverTextBoxWidth = 135;
-      var popoverTextBoxHeight = 120;
-      var popoverTextBoxX;
-      var popoverTextBoxY;
-
-      rect
-        .on('click', function(d) {
-          var m = d3.mouse($scope.svg.node());
-
-          popoverTextBoxX = m[0];
-          popoverTextBoxY = m[1];
-
-          if($scope.popoverText || $scope.popoverTextBox) {
-            cleanUpPopovers();
-          }
-
-          if(popoverTextBoxY + popoverTextBoxHeight > $scope.height) {
-            popoverTextBoxY = popoverTextBoxY - popoverTextBoxHeight;
-          }
-
-          if(popoverTextBoxX + popoverTextBoxWidth > $scope.width) {
-            popoverTextBoxX = popoverTextBoxX - popoverTextBoxWidth;
-          }
-
-          $scope.popoverTextBox = $scope.svg.append('rect')
-            .attr("x", popoverTextBoxX)
-            .attr("y", popoverTextBoxY)
-            .attr("rx", 6)
-            .attr("ry", 6)
-            .attr("width", popoverTextBoxWidth)
-            .attr("height", popoverTextBoxHeight)
-            .attr("fill", "rgba(0,0,0,0.34)")
-            .attr({
-              'stroke': 'black',
-              'stroke-width': '1px'
-            });
-
-          $scope.popoverText = $scope.svg.append('text')
-            .attr("x", popoverTextBoxX)
-            .attr("y", popoverTextBoxY)
-            .attr('class', 'popover-text')
-            .attr('name', 'popover-text')
-            .text( function () {
-              return  d.Date +
-                ' O:' + d.Open +
-                ' H:' + d.High +
-                ' L:' + d.Low +
-                ' C:' + d.Close; })
-            .attr("font-family", "sans-serif")
-            .attr("font-size", "20px")
-            .attr("fill", "white")
-            .call(wrap, 125, popoverTextBoxX);
-
-          $scope.popoverTextBoxCloseText = $scope.svg.append('text')
-            .attr("x", popoverTextBoxX + popoverTextBoxWidth - 20 + 5)
-            .attr("y", popoverTextBoxY + 20 - 4)
-            .text('X');
-
-          $scope.popoverTextBoxClose = $scope.svg.append('rect')
-            .attr("x", popoverTextBoxX + popoverTextBoxWidth - 20 + 2)
-            .attr("y", popoverTextBoxY + 2)
-            .attr("rx", 6)
-            .attr("ry", 6)
-            .attr("width", 16)
-            .attr("height", 16)
-            .attr("fill", "red")
-            .attr({
-              'stroke': 'black',
-              'stroke-width': '1px'
-            })
-            .attr('style', 'fill-opacity:0.3; cursor: pointer;')
-            .on('click', function() {
-              cleanUpPopovers();
-            });
-
-        });
-
-    };
-
-
-    var cleanUpPopovers = function() {
-      //popoverTextBox.remove();
-      //popoverTextBoxClose.remove();
-      //popoverText.remove();
-      //popoverTextBoxCloseText.remove();
-    };
-
-
-    var wrap = function(text, width, popoverTextBoxX) {
-      text.each(function() {
-        var text = d3.select(this),
-          words = text.text().split(/\s+/).reverse(),
-          word,
-          line = [],
-          lineNumber = 0,
-          lineHeight = 1.1, // ems
-          y = text.attr("y"),
-          dy = parseFloat(text.attr("dy")),
-          tspan = text.text(null).append("tspan").attr("x", popoverTextBoxX + 3).attr("y", parseInt(y) + 20).attr("dy", 0 + "em");
-        while (word = words.pop()) {
-          line.push(word);
-          tspan.text(line.join(" "));
-          if (tspan.node().getComputedTextLength() > width) {
-            line.pop();
-            tspan.text(line.join(" "));
-            line = [word];
-            tspan = text.append("tspan").attr("x", popoverTextBoxX + 3).attr("y", parseInt(y) + 20).attr("dy", ++lineNumber + "em").text(word);
-          }
-        }
-      });
-    };
+    // SvgChartsPopover.test = function(rect) {
+    //
+    //   var popoverTextBoxWidth = 135;
+    //   var popoverTextBoxHeight = 120;
+    //   var popoverTextBoxX;
+    //   var popoverTextBoxY;
+    //
+    //   rect
+    //     .on('click', function(d) {
+    //       var m = d3.mouse($scope.svg.node());
+    //
+    //       popoverTextBoxX = m[0];
+    //       popoverTextBoxY = m[1];
+    //
+    //       if($scope.popoverText || $scope.popoverTextBox) {
+    //         cleanUpPopovers();
+    //       }
+    //
+    //       if(popoverTextBoxY + popoverTextBoxHeight > $scope.height) {
+    //         popoverTextBoxY = popoverTextBoxY - popoverTextBoxHeight;
+    //       }
+    //
+    //       if(popoverTextBoxX + popoverTextBoxWidth > $scope.width) {
+    //         popoverTextBoxX = popoverTextBoxX - popoverTextBoxWidth;
+    //       }
+    //
+    //       $scope.popoverTextBox = $scope.svg.append('rect')
+    //         .attr("x", popoverTextBoxX)
+    //         .attr("y", popoverTextBoxY)
+    //         .attr("rx", 6)
+    //         .attr("ry", 6)
+    //         .attr("width", popoverTextBoxWidth)
+    //         .attr("height", popoverTextBoxHeight)
+    //         .attr("fill", "rgba(0,0,0,0.34)")
+    //         .attr({
+    //           'stroke': 'black',
+    //           'stroke-width': '1px'
+    //         });
+    //
+    //       $scope.popoverText = $scope.svg.append('text')
+    //         .attr("x", popoverTextBoxX)
+    //         .attr("y", popoverTextBoxY)
+    //         .attr('class', 'popover-text')
+    //         .attr('name', 'popover-text')
+    //         .text( function () {
+    //           return  d.Date +
+    //             ' O:' + d.Open +
+    //             ' H:' + d.High +
+    //             ' L:' + d.Low +
+    //             ' C:' + d.Close; })
+    //         .attr("font-family", "sans-serif")
+    //         .attr("font-size", "20px")
+    //         .attr("fill", "white")
+    //         .call(wrap, 125, popoverTextBoxX);
+    //
+    //       $scope.popoverTextBoxCloseText = $scope.svg.append('text')
+    //         .attr("x", popoverTextBoxX + popoverTextBoxWidth - 20 + 5)
+    //         .attr("y", popoverTextBoxY + 20 - 4)
+    //         .text('X');
+    //
+    //       $scope.popoverTextBoxClose = $scope.svg.append('rect')
+    //         .attr("x", popoverTextBoxX + popoverTextBoxWidth - 20 + 2)
+    //         .attr("y", popoverTextBoxY + 2)
+    //         .attr("rx", 6)
+    //         .attr("ry", 6)
+    //         .attr("width", 16)
+    //         .attr("height", 16)
+    //         .attr("fill", "red")
+    //         .attr({
+    //           'stroke': 'black',
+    //           'stroke-width': '1px'
+    //         })
+    //         .attr('style', 'fill-opacity:0.3; cursor: pointer;')
+    //         .on('click', function() {
+    //           cleanUpPopovers();
+    //         });
+    //
+    //     });
+    //
+    // };
+    //
+    //
+    // var cleanUpPopovers = function() {
+    //   //popoverTextBox.remove();
+    //   //popoverTextBoxClose.remove();
+    //   //popoverText.remove();
+    //   //popoverTextBoxCloseText.remove();
+    // };
+    //
+    //
+    // var wrap = function(text, width, popoverTextBoxX) {
+    //   text.each(function() {
+    //     var text = d3.select(this),
+    //       words = text.text().split(/\s+/).reverse(),
+    //       word,
+    //       line = [],
+    //       lineNumber = 0,
+    //       lineHeight = 1.1, // ems
+    //       y = text.attr("y"),
+    //       dy = parseFloat(text.attr("dy")),
+    //       tspan = text.text(null).append("tspan").attr("x", popoverTextBoxX + 3).attr("y", parseInt(y) + 20).attr("dy", 0 + "em");
+    //     while (word = words.pop()) {
+    //       line.push(word);
+    //       tspan.text(line.join(" "));
+    //       if (tspan.node().getComputedTextLength() > width) {
+    //         line.pop();
+    //         tspan.text(line.join(" "));
+    //         line = [word];
+    //         tspan = text.append("tspan").attr("x", popoverTextBoxX + 3).attr("y", parseInt(y) + 20).attr("dy", ++lineNumber + "em").text(word);
+    //       }
+    //     }
+    //   });
+    // };
 
     /**
      * @ngdoc function
@@ -1016,12 +1027,12 @@ angular.module('svgChartsApp')
      *
      * @param {String} ID of the svgChartsPopover
      */
-    svgChartsPopover.init = function() {
+    SvgChartsPopover.init = function() {
 
     };
 
 
-    return svgChartsPopover;
+    return SvgChartsPopover;
 
   });
 
@@ -1035,6 +1046,9 @@ angular.module('svgChartsApp')
  * Factory that contains all the properties and methods for a SvgChartsExtras
  *
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsExtras', function (SvgChartsScene) {
 
@@ -1063,10 +1077,6 @@ angular.module('svgChartsApp')
     };
 
 
-
-
-
-
     var movingAvg = function (n) {
       return function (points) {
         points = points.map(function (each, index, array) {
@@ -1084,20 +1094,21 @@ angular.module('svgChartsApp')
           return undefined;
         });
         points = points.filter(function (each) {
-          return typeof each !== 'undefined'
+          return typeof each !== 'undefined';
         });
         // Transform the points into a basis line
         var pathDesc = d3.svg.line().interpolate('basis')(points);
         // Remove the extra 'M'
         return pathDesc.slice(1, pathDesc.length);
-      }
+      };
     };
 
-    SvgChartsExtras.movingAverageCleanup = function() {
-      this.movingAvgLine.attr('d', function() {});
+    SvgChartsExtras.movingAverageCleanup = function () {
+      this.movingAvgLine.attr('d', function () {
+      });
     };
 
-    SvgChartsExtras.renderMovingAverage = function() {
+    SvgChartsExtras.renderMovingAverage = function () {
 
       var movingAverageLine = d3.svg.line()
         .x(function (d) {
@@ -1116,13 +1127,6 @@ angular.module('svgChartsApp')
     };
 
 
-
-
-
-
-
-
-
     SvgChartsExtras.renderBollingerBands = function () {
 
       //var _movingSum;
@@ -1137,9 +1141,15 @@ angular.module('svgChartsApp')
 
 
       var bollingerBandArea = d3.svg.area()
-        .x(function(d) { return SvgChartsScene.x(d.date); })
-        .y0(function(d) { return SvgChartsScene.y(d.low); })
-        .y1(function(d) { return SvgChartsScene.y(d.high); })
+        .x(function (d) {
+          return SvgChartsScene.x(d.date);
+        })
+        .y0(function (d) {
+          return SvgChartsScene.y(d.low);
+        })
+        .y1(function (d) {
+          return SvgChartsScene.y(d.high);
+        })
         .interpolate(movingAvg(3));
 
       var bollingerBandHigh = d3.svg.line()
@@ -1171,35 +1181,33 @@ angular.module('svgChartsApp')
     };
 
     SvgChartsExtras.bollingerBandsCleanup = function () {
-      this.bollingerBandHigh.attr('d', function() {});
-      this.bollingerBandLow.attr('d', function() {});
-      this.bollingerBandArea.attr('d', function() {});
+      this.bollingerBandHigh.attr('d', function () {
+      });
+      this.bollingerBandLow.attr('d', function () {
+      });
+      this.bollingerBandArea.attr('d', function () {
+      });
     };
 
-    var getBollingerBands = function (n, k, data) {
-      var bands = []; //{ ma: 0, low: 0, high: 0 }
-      for (var i = n - 1, len = data.length; i < len; i++) {
-        var slice = data.slice(i + 1 - n, i);
-        var mean = d3.mean(slice, function (d) {
-          return d.close;
-        });
-        var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
-          return Math.pow(d.close - mean, 2);
-        })));
-        bands.push({
-          date: data[i].date,
-          ma: mean,
-          low: mean - (k * stdDev),
-          high: mean + (k * stdDev)
-        });
-      }
-      return bands;
-    };
-
-
-
-
-
+    // var getBollingerBands = function (n, k, data) {
+    //   var bands = []; //{ ma: 0, low: 0, high: 0 }
+    //   var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
+    //     return Math.pow(d.close - mean, 2);
+    //   })));
+    //   for (var i = n - 1, len = data.length; i < len; i++) {
+    //     var slice = data.slice(i + 1 - n, i);
+    //     var mean = d3.mean(slice, function (d) {
+    //       return d.close;
+    //     });
+    //     bands.push({
+    //       date: data[i].date,
+    //       ma: mean,
+    //       low: mean - (k * stdDev),
+    //       high: mean + (k * stdDev)
+    //     });
+    //   }
+    //   return bands;
+    // };
 
 
     SvgChartsExtras.cleanUpDataPoints = function () {
@@ -1210,20 +1218,20 @@ angular.module('svgChartsApp')
     SvgChartsExtras.renderDataPoints = function () {
 
       var dataPoints = this.chartPlotPoints.selectAll('.data-points')
-          .data(SvgChartsScene.chartData);
+        .data(SvgChartsScene.chartData);
 
       dataPoints.enter()
-          .append('circle')
-          .attr('name', function (d) {
-            return d.Symbol
-          })
-          .on('click', function (d) {
-            console.log(d);
-          })
-          .attr('style', 'cursor: pointer;')
-          .attr('class', 'data-points')
-          .attr('fill', '#3F51B5')
-          .attr('stroke', '#fff');
+        .append('circle')
+        .attr('name', function (d) {
+          return d.Symbol;
+        })
+        .on('click', function (d) {
+          console.log(d);
+        })
+        .attr('style', 'cursor: pointer;')
+        .attr('class', 'data-points')
+        .attr('fill', '#3F51B5')
+        .attr('stroke', '#fff');
 
       dataPoints.exit().remove();
 
@@ -1231,18 +1239,17 @@ angular.module('svgChartsApp')
         .transition()
         .duration(500)
         .ease("linear")
-        .attr('cx', function(d, i) {
+        .attr('cx', function (d) {
           return SvgChartsScene.x(d.date);
         })
         .attr('cy', function (d) {
           return SvgChartsScene.y(d.close);
         })
-        .attr('r', function(d) {
+        .attr('r', function () {
           return 4;
         });
 
     };
-
 
 
     return SvgChartsExtras;
@@ -1259,8 +1266,11 @@ angular.module('svgChartsApp')
  * Factory that contains all the properties and methods for a SvgChartsAxis
  *
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
-  .factory('SvgChartsAxis', function (SvgChartsScene, $mdMedia) {
+  .factory('SvgChartsAxis', function (SvgChartsScene) {
 
     var SvgChartsAxis = {};
 
@@ -1270,6 +1280,7 @@ angular.module('svgChartsApp')
 
     /**
      * @ngdoc function
+     * @name SvgChartsAxis.init
      * @name SvgChartsAxis.init
      * @methodOf svgChartsApp.service:SvgChartsAxis
      *
@@ -1414,6 +1425,9 @@ angular.module('svgChartsApp')
  * Factory that contains all the properties and methods for a SvgChartsScene
  *
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsScene', function () {
 
@@ -1461,7 +1475,7 @@ angular.module('svgChartsApp')
  *
  */
 angular.module('svgChartsApp')
-  .factory('SvgChartsSubPlot', function (SvgChartsScene, Constants) {
+  .factory('SvgChartsSubPlot', function (SvgChartsScene) {
 
     var SvgChartsSubPlot = {};
 
@@ -1563,6 +1577,9 @@ angular.module('svgChartsApp')
  * # SvgChartsVolumeChart
  * Factory in the svgChartsApp.
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsVolumeChart', function (SvgChartsScene) {
 

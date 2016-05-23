@@ -15,7 +15,7 @@
     "angular-route": "latest",
     "angular-sanitize": "latest",
     "angular-material": "latest",
-    "d3": "~3.5.16",
+    "d3": "latest",
     "angular-material-icons": "latest"
   },
   "devDependencies": {
