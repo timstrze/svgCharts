@@ -167,26 +167,12 @@ angular.module('svgChartsApp')
 
         $scope.changeTheme = function (backgroundColor, fontColor) {
 
-          // if (type === 'dark') {
-
             SvgChartsScene.svg.attr('style', 'background-color:' + backgroundColor);
 
             SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:' + fontColor);
             SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:' + fontColor);
 
             SvgChartsLineChart.gradientStart.attr('stop-color', backgroundColor);
-
-
-          // } else {
-          //   SvgChartsScene.svg.attr('style', 'background-color:#fff');
-          //
-          //   SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
-          //   SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
-          //
-          //   SvgChartsLineChart.gradientStart.attr('stop-color', '#fff');
-          //
-          // }
-
         };
 
 
@@ -266,7 +252,7 @@ angular.module('svgChartsApp')
           $scope.previousSelectedExtras = $scope.selectedExtras;
 
 
-          SvgChartsAxis.renderXYAxis();
+          SvgChartsAxis.renderXYAxis($scope.selectedTheme.background, $scope.selectedTheme.font);
 
 
           if ($scope.selectedTheme && $scope.selectedTheme.background && $scope.selectedTheme.font) {
@@ -1300,7 +1286,7 @@ angular.module('svgChartsApp')
 
     };
 
-    SvgChartsAxis.renderXYAxis = function () {
+    SvgChartsAxis.renderXYAxis = function (backgroundColor, fontColor) {
 
 
       var xAxis = d3.svg.axis()
@@ -1324,8 +1310,9 @@ angular.module('svgChartsApp')
         .call(xAxis)
         .attr({
           'fill': 'none',
+          'opacity': .8,
           'shape-rendering': 'crispEdges',
-          'stroke': 'rgba(0,0,0,0.54)'
+          'stroke': fontColor
         });
 
 
@@ -1335,8 +1322,9 @@ angular.module('svgChartsApp')
         .call(yAxis)
         .attr({
           'fill': 'none',
+          'opacity': .8,
           'shape-rendering': 'crispEdges',
-          'stroke': 'rgba(0,0,0,0.54)'
+          'stroke': fontColor
         });
 
 
@@ -1352,7 +1340,8 @@ angular.module('svgChartsApp')
             'x1': 0,
             'fill': 'none',
             'shape-rendering': 'crispEdges',
-            'stroke': '#C7C7C7',
+            'opacity': .8,
+            'stroke': fontColor,
             'stroke-width': '1px',
             'stroke-dasharray': '5, 5'
           });
@@ -1368,6 +1357,9 @@ angular.module('svgChartsApp')
             },
             'y2': function (d) {
               return SvgChartsScene.y(d);
+            },
+            'stroke': function() {
+              return fontColor;
             }
           });
 
@@ -1383,7 +1375,8 @@ angular.module('svgChartsApp')
             'class': 'verticalGrid',
             'fill': 'none',
             'shape-rendering': 'crispEdges',
-            'stroke': '#C7C7C7',
+            'opacity': .8,
+            'stroke': fontColor,
             'stroke-width': '1px',
             'stroke-dasharray': '5, 5'
           });
@@ -1400,13 +1393,16 @@ angular.module('svgChartsApp')
               return SvgChartsScene.x(d);
             },
             'y1': -SvgChartsScene.margin.top,
-            'y2': SvgChartsScene.height
+            'y2': SvgChartsScene.height,
+            'stroke': function() {
+              return fontColor;
+            }
           });
 
 
-      SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);').attr('stroke-width', '0px');
+      SvgChartsAxis.xAxis.selectAll('text').attr('stroke-width', '0px');
 
-      SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);').attr('stroke-width', '0px');
+      SvgChartsAxis.yAxis.selectAll('text').attr('stroke-width', '0px');
 
     };
 
