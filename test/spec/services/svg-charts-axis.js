@@ -17,6 +17,7 @@ describe('Service: SvgChartsAxis', function () {
 
     it('SvgChartsAxis should exist', function () {
       expect(SvgChartsAxis.http).not.toBeUndefined();
+      expect(testData).not.toBeUndefined();
     });
 
   });

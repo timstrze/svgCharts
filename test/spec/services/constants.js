@@ -17,6 +17,7 @@ describe('Service: Constants', function () {
 
     it('Constants should exist', function () {
       expect(Constants.http).not.toBeUndefined();
+      expect(testData).not.toBeUndefined();
     });
 
   });

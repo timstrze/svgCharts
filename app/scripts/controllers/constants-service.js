@@ -16,7 +16,7 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name Constants.getDate
-     * @methodOf stockTrackAngularJsApp.service:Constants
+     * @methodOf svgChartsApp.service:Constants
      *
      * @description
      * Takes in a javascript date and returns it formatted as 'YYYY-MM-DD'
@@ -44,11 +44,52 @@ angular.module('svgChartsApp')
       return yyyy + '-' + mm + '-' + dd;
     };
 
+    /**
+     * @ngdoc function
+     * @name Constants.themeTypes
+     * @propertyOf svgChartsApp.service:Constants
+     *
+     * @description
+     * Returns an array of order types
+     *
+     * @returns {Array} Returns an array of theme types
+     *
+     */
+
+    Constants.themeTypes = [
+      {
+        slug: 'default',
+        title: 'Default',
+        font: '#4682B4',
+        background: '#FFFFFF'
+      }, {
+        slug: 'dark',
+        title: 'Dark',
+        font: '#FFFFFF',
+        background: '#272727'
+      }, {
+        slug: 'darkPurple',
+        title: 'Dark Purple',
+        font: '#FFFFFF',
+        background: 'rgb(14,15,20)'
+      }, {
+        slug: 'mintGreen',
+        title: 'Mint Green',
+        font: 'rgba(0,0,0,0.54)',
+        background: 'rgb(210,211,209)'
+      }, {
+        slug: 'autumn',
+        title: 'Autumn',
+        font: 'rgba(0,0,0,0.54)',
+        background: 'rgb(255,228,143)'
+      }
+    ];
+
 
     /**
      * @ngdoc function
      * @name Constants.chartTypes
-     * @propertyOf stockTrackAngularJsApp.service:Constants
+     * @propertyOf svgChartsApp.service:Constants
      *
      * @description
      * Returns an array of chart types
@@ -90,7 +131,7 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name Constants.Symbols
-     * @propertyOf stockTrackAngularJsApp.service:Constants
+     * @propertyOf svgChartsApp.service:Constants
      *
      * @description
      * Returns an array of chart types
@@ -162,7 +203,7 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name Constants.chartTypes
-     * @propertyOf stockTrackAngularJsApp.service:chartExtras
+     * @propertyOf svgChartsApp.service:chartExtras
      *
      * @description
      * Returns an array of chart types
@@ -190,10 +231,6 @@ angular.module('svgChartsApp')
       {
         title: 'Split View',
         slug: 'split-view'
-      },
-      {
-        title: 'Dark Theme',
-        slug: 'dark-theme'
       }
     ];
 
@@ -203,7 +240,7 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name Constants.fiveDaysFromtoday
-     * @propertyOf stockTrackAngularJsApp.service:Constants
+     * @propertyOf svgChartsApp.service:Constants
      *
      * @description
      * Returns a string formatted as Wed Aug 26 2015 12:18:00 GMT-0500 (CDT)
@@ -217,7 +254,7 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name Constants.oneMonthFromtoday
-     * @propertyOf stockTrackAngularJsApp.service:Constants
+     * @propertyOf svgChartsApp.service:Constants
      *
      * @description
      * Returns a string formatted as Fri Jul 31 2015 12:18:00 GMT-0500 (CDT)
@@ -231,7 +268,7 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name Constants.oneYearFromtoday
-     * @propertyOf stockTrackAngularJsApp.service:Constants
+     * @propertyOf svgChartsApp.service:Constants
      *
      * @description
      * Returns a string formatted as Sun Aug 31 2014 12:18:00 GMT-0500 (CDT)
@@ -245,7 +282,7 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name Constants.sixMonthsFromtoday
-     * @propertyOf stockTrackAngularJsApp.service:Constants
+     * @propertyOf svgChartsApp.service:Constants
      *
      * @description
      * Returns a string formatted as Tue Mar 03 2015 12:18:00 GMT-0600 (CST)
@@ -259,7 +296,7 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name Constants.threeMonthsFromtoday
-     * @propertyOf stockTrackAngularJsApp.service:Constants
+     * @propertyOf svgChartsApp.service:Constants
      *
      * @description
      * Returns a string formatted as Sun May 31 2015 12:18:00 GMT-0500 (CDT)
@@ -273,7 +310,7 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name Constants.today
-     * @propertyOf stockTrackAngularJsApp.service:Constants
+     * @propertyOf svgChartsApp.service:Constants
      *
      * @description
      * Returns a string formatted as Mon Aug 31 2015 12:18:00 GMT-0500 (CDT)
@@ -287,7 +324,7 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name Constants.historicalDateRange
-     * @methodOf stockTrackAngularJsApp.service:Constants
+     * @methodOf svgChartsApp.service:Constants
      *
      * @description
      * Array of default historical data for tabs

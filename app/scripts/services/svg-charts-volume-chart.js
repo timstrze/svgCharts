@@ -7,6 +7,9 @@
  * # SvgChartsVolumeChart
  * Factory in the svgChartsApp.
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsVolumeChart', function (SvgChartsScene) {
 

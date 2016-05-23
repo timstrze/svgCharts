@@ -7,6 +7,9 @@
  * # SvgChartsKagiChart
  * Factory in the svgChartsApp.
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsKagiChart', function (SvgChartsScene) {
 
@@ -25,50 +28,50 @@ angular.module('svgChartsApp')
 
 
     SvgChartsKagiChart.render = function () {
-      var _this = this;
-
-      var test = [
-        135,
-        132,
-        128,
-        133,
-        130,
-        129,
-        127,
-        134,
-        139,
-        137,
-        145,
-        158,
-        147,
-        143,
-        150,
-        149,
-        160,
-        164,
-        167,
-        156,
-        165,
-        168,
-        171,
-        173,
-        169,
-        177,
-        180,
-        176,
-        170,
-        165,
-        169,
-        173,
-        170,
-        170,
-        168,
-        165,
-        171,
-        175,
-        179,
-        175
-      ];
+      // var _this = this;
+      //
+      // var test = [
+      //   135,
+      //   132,
+      //   128,
+      //   133,
+      //   130,
+      //   129,
+      //   127,
+      //   134,
+      //   139,
+      //   137,
+      //   145,
+      //   158,
+      //   147,
+      //   143,
+      //   150,
+      //   149,
+      //   160,
+      //   164,
+      //   167,
+      //   156,
+      //   165,
+      //   168,
+      //   171,
+      //   173,
+      //   169,
+      //   177,
+      //   180,
+      //   176,
+      //   170,
+      //   165,
+      //   169,
+      //   173,
+      //   170,
+      //   170,
+      //   168,
+      //   165,
+      //   171,
+      //   175,
+      //   179,
+      //   175
+      // ];
 
       //var line = d3.svg.line()
       //  .x(function (d) {
@@ -108,7 +111,7 @@ angular.module('svgChartsApp')
       //var sceneWidth = SvgChartsScene.width;
       //var sceneHeight = SvgChartsScene.height;
 
-      var reversalAmount = SvgChartsScene.chartData.reverse()[0].close * .03;
+      var reversalAmount = SvgChartsScene.chartData.reverse()[0].close * parseFloat('.03');
 
       var previousReversal = SvgChartsScene.chartData.reverse()[0].close;
 

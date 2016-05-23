@@ -8,6 +8,9 @@
  * Factory that contains all the properties and methods for a SvgChartsScene
  *
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsScene', function () {
 

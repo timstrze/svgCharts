@@ -17,6 +17,7 @@ describe('Service: SvgChartsExtras', function () {
 
     it('SvgChartsExtras should exist', function () {
       expect(SvgChartsExtras.http).not.toBeUndefined();
+      expect(testData).not.toBeUndefined();
     });
 
   });

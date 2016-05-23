@@ -13,13 +13,13 @@ angular.module('svgChartsApp')
     this.Constants = Constants;
 
     this.getSelectedSymbol = function (Symbol) {
-
+      return Symbol;
     };
 
     /**
      * @ngdoc function
      * @name DemoController.init
-     * @module Main
+     * @module Demo
      * @methodOf svgChartsApp.controller:DemoController
      * @kind function
      *
@@ -32,14 +32,14 @@ angular.module('svgChartsApp')
       this.symbol = {};
       this.selectedChart = 'line-chart';
       this.selectedExtras = [];
+      this.selectedTheme = Constants.themeTypes[1];
 
-      $http.get('json/symbols.json').then(function(results) {
+      $http.get('json/symbols.json').then(function (results) {
         _this.Symbols = results.data.quote;
         _this.selectedSymbol = _this.Symbols[0];
 
       });
     };
-
 
 
     /**

@@ -17,6 +17,7 @@ describe('Service: SvgChartsSubPlot', function () {
 
     it('SvgChartsSubPlot should exist', function () {
       expect(SvgChartsSubPlot.http).not.toBeUndefined();
+      expect(testData).not.toBeUndefined();
     });
 
   });

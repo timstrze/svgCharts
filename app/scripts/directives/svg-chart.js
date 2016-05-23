@@ -22,6 +22,7 @@ angular.module('svgChartsApp')
     return {
       scope: {
         chartData: '=',
+        selectedTheme: '=',
         selectedExtras: '=',
         selectedChart: '=',
         subPlots: '='
@@ -136,27 +137,27 @@ angular.module('svgChartsApp')
         };
 
 
-        $scope.changeTheme = function (type) {
+        $scope.changeTheme = function (backgroundColor, fontColor) {
 
-          if (type === 'dark') {
+          // if (type === 'dark') {
 
-            SvgChartsScene.svg.attr('style', 'background-color:#272727');
+            SvgChartsScene.svg.attr('style', 'background-color:' + backgroundColor);
 
-            SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:white;');
-            SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:white;');
+            SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:' + fontColor);
+            SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:' + fontColor);
 
-            SvgChartsLineChart.gradientStart.attr('stop-color', '#272727');
+            SvgChartsLineChart.gradientStart.attr('stop-color', backgroundColor);
 
 
-          } else {
-            SvgChartsScene.svg.attr('style', 'background-color:#fff');
-
-            SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
-            SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
-
-            SvgChartsLineChart.gradientStart.attr('stop-color', '#fff');
-
-          }
+          // } else {
+          //   SvgChartsScene.svg.attr('style', 'background-color:#fff');
+          //
+          //   SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
+          //   SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
+          //
+          //   SvgChartsLineChart.gradientStart.attr('stop-color', '#fff');
+          //
+          // }
 
         };
 
@@ -240,10 +241,10 @@ angular.module('svgChartsApp')
           SvgChartsAxis.renderXYAxis();
 
 
-          if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('dark-theme') > -1) {
-            $scope.changeTheme('dark');
+          if ($scope.selectedTheme && $scope.selectedTheme.background && $scope.selectedTheme.font) {
+            $scope.changeTheme($scope.selectedTheme.background, $scope.selectedTheme.font);
           } else {
-            $scope.changeTheme('white');
+            $scope.changeTheme('#FFFFFF', '#000000');
           }
 
         };
@@ -260,7 +261,7 @@ angular.module('svgChartsApp')
          */
         $scope.$watch(function () {
           if ($scope.chartData) {
-            return JSON.stringify([$scope.chartData, $scope.subPlots, $scope.selectedChart, $scope.selectedExtras]);
+            return JSON.stringify([$scope.chartData, $scope.subPlots, $scope.selectedChart, $scope.selectedExtras, $scope.selectedTheme]);
           }
         }, function () {
           // Make sure there is historical data

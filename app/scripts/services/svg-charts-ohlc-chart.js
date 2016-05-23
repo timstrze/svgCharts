@@ -7,6 +7,9 @@
  * # SvgChartsOHLCChart
  * Factory in the svgChartsApp.
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsOHLCChart', function (SvgChartsScene) {
 
@@ -15,7 +18,7 @@ angular.module('svgChartsApp')
     SvgChartsOHLCChart.init = function() {
 
       this.ohlcContainer = SvgChartsScene.svgContent.append('g')
-        .attr('name', 'ohlcBars')
+        .attr('name', 'ohlcBars');
 
     };
 

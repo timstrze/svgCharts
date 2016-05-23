@@ -9,7 +9,7 @@
  *
  */
 angular.module('svgChartsApp')
-  .factory('SvgChartsSubPlot', function (SvgChartsScene, Constants) {
+  .factory('SvgChartsSubPlot', function (SvgChartsScene) {
 
     var SvgChartsSubPlot = {};
 

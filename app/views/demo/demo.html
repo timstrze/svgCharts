@@ -18,6 +18,12 @@
         <md-option ng-value="opt.slug" ng-repeat="opt in ctrl.Constants.chartExtras">{{ opt.title }}</md-option>
       </md-select>
     </md-input-container>
+
+    <md-input-container flex>
+      <md-select ng-model="ctrl.selectedTheme" placeholder="Select theme">
+        <md-option ng-value="opt" ng-repeat="opt in ctrl.Constants.themeTypes">{{ opt.title }}</md-option>
+      </md-select>
+    </md-input-container>
   </div>
 
 </md-content>
@@ -26,6 +32,7 @@
     <svg-chart sub-plots="ctrl.Constants.subPlots[0].buys"
                selected-extras="ctrl.selectedExtras"
                selected-chart="ctrl.selectedChart"
+               selected-theme="ctrl.selectedTheme"
                chart-data="ctrl.selectedSymbol.historicalData">
     </svg-chart>
   </div>

@@ -8,8 +8,11 @@
  * Factory that contains all the properties and methods for a SvgChartsAxis
  *
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
-  .factory('SvgChartsAxis', function (SvgChartsScene, $mdMedia) {
+  .factory('SvgChartsAxis', function (SvgChartsScene) {
 
     var SvgChartsAxis = {};
 
@@ -19,6 +22,7 @@ angular.module('svgChartsApp')
 
     /**
      * @ngdoc function
+     * @name SvgChartsAxis.init
      * @name SvgChartsAxis.init
      * @methodOf svgChartsApp.service:SvgChartsAxis
      *

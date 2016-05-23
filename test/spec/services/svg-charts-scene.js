@@ -17,6 +17,7 @@ describe('Service: SvgChartsScene', function () {
 
     it('SvgChartsScene should exist', function () {
       expect(SvgChartsScene.http).not.toBeUndefined();
+      expect(testData).not.toBeUndefined();
     });
 
   });

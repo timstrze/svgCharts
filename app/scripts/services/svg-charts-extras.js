@@ -8,6 +8,9 @@
  * Factory that contains all the properties and methods for a SvgChartsExtras
  *
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsExtras', function (SvgChartsScene) {
 
@@ -36,10 +39,6 @@ angular.module('svgChartsApp')
     };
 
 
-
-
-
-
     var movingAvg = function (n) {
       return function (points) {
         points = points.map(function (each, index, array) {
@@ -57,20 +56,21 @@ angular.module('svgChartsApp')
           return undefined;
         });
         points = points.filter(function (each) {
-          return typeof each !== 'undefined'
+          return typeof each !== 'undefined';
         });
         // Transform the points into a basis line
         var pathDesc = d3.svg.line().interpolate('basis')(points);
         // Remove the extra 'M'
         return pathDesc.slice(1, pathDesc.length);
-      }
+      };
     };
 
-    SvgChartsExtras.movingAverageCleanup = function() {
-      this.movingAvgLine.attr('d', function() {});
+    SvgChartsExtras.movingAverageCleanup = function () {
+      this.movingAvgLine.attr('d', function () {
+      });
     };
 
-    SvgChartsExtras.renderMovingAverage = function() {
+    SvgChartsExtras.renderMovingAverage = function () {
 
       var movingAverageLine = d3.svg.line()
         .x(function (d) {
@@ -89,13 +89,6 @@ angular.module('svgChartsApp')
     };
 
 
-
-
-
-
-
-
-
     SvgChartsExtras.renderBollingerBands = function () {
 
       //var _movingSum;
@@ -110,9 +103,15 @@ angular.module('svgChartsApp')
 
 
       var bollingerBandArea = d3.svg.area()
-        .x(function(d) { return SvgChartsScene.x(d.date); })
-        .y0(function(d) { return SvgChartsScene.y(d.low); })
-        .y1(function(d) { return SvgChartsScene.y(d.high); })
+        .x(function (d) {
+          return SvgChartsScene.x(d.date);
+        })
+        .y0(function (d) {
+          return SvgChartsScene.y(d.low);
+        })
+        .y1(function (d) {
+          return SvgChartsScene.y(d.high);
+        })
         .interpolate(movingAvg(3));
 
       var bollingerBandHigh = d3.svg.line()
@@ -144,35 +143,33 @@ angular.module('svgChartsApp')
     };
 
     SvgChartsExtras.bollingerBandsCleanup = function () {
-      this.bollingerBandHigh.attr('d', function() {});
-      this.bollingerBandLow.attr('d', function() {});
-      this.bollingerBandArea.attr('d', function() {});
+      this.bollingerBandHigh.attr('d', function () {
+      });
+      this.bollingerBandLow.attr('d', function () {
+      });
+      this.bollingerBandArea.attr('d', function () {
+      });
     };
 
-    var getBollingerBands = function (n, k, data) {
-      var bands = []; //{ ma: 0, low: 0, high: 0 }
-      for (var i = n - 1, len = data.length; i < len; i++) {
-        var slice = data.slice(i + 1 - n, i);
-        var mean = d3.mean(slice, function (d) {
-          return d.close;
-        });
-        var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
-          return Math.pow(d.close - mean, 2);
-        })));
-        bands.push({
-          date: data[i].date,
-          ma: mean,
-          low: mean - (k * stdDev),
-          high: mean + (k * stdDev)
-        });
-      }
-      return bands;
-    };
-
-
-
-
-
+    // var getBollingerBands = function (n, k, data) {
+    //   var bands = []; //{ ma: 0, low: 0, high: 0 }
+    //   var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
+    //     return Math.pow(d.close - mean, 2);
+    //   })));
+    //   for (var i = n - 1, len = data.length; i < len; i++) {
+    //     var slice = data.slice(i + 1 - n, i);
+    //     var mean = d3.mean(slice, function (d) {
+    //       return d.close;
+    //     });
+    //     bands.push({
+    //       date: data[i].date,
+    //       ma: mean,
+    //       low: mean - (k * stdDev),
+    //       high: mean + (k * stdDev)
+    //     });
+    //   }
+    //   return bands;
+    // };
 
 
     SvgChartsExtras.cleanUpDataPoints = function () {
@@ -183,20 +180,20 @@ angular.module('svgChartsApp')
     SvgChartsExtras.renderDataPoints = function () {
 
       var dataPoints = this.chartPlotPoints.selectAll('.data-points')
-          .data(SvgChartsScene.chartData);
+        .data(SvgChartsScene.chartData);
 
       dataPoints.enter()
-          .append('circle')
-          .attr('name', function (d) {
-            return d.Symbol
-          })
-          .on('click', function (d) {
-            console.log(d);
-          })
-          .attr('style', 'cursor: pointer;')
-          .attr('class', 'data-points')
-          .attr('fill', '#3F51B5')
-          .attr('stroke', '#fff');
+        .append('circle')
+        .attr('name', function (d) {
+          return d.Symbol;
+        })
+        .on('click', function (d) {
+          console.log(d);
+        })
+        .attr('style', 'cursor: pointer;')
+        .attr('class', 'data-points')
+        .attr('fill', '#3F51B5')
+        .attr('stroke', '#fff');
 
       dataPoints.exit().remove();
 
@@ -204,18 +201,17 @@ angular.module('svgChartsApp')
         .transition()
         .duration(500)
         .ease("linear")
-        .attr('cx', function(d, i) {
+        .attr('cx', function (d) {
           return SvgChartsScene.x(d.date);
         })
         .attr('cy', function (d) {
           return SvgChartsScene.y(d.close);
         })
-        .attr('r', function(d) {
+        .attr('r', function () {
           return 4;
         });
 
     };
-
 
 
     return SvgChartsExtras;

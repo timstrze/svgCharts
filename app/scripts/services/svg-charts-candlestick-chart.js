@@ -7,20 +7,23 @@
  * # SvgChartsCandlestickChart
  * Factory in the svgChartsApp.
  */
+
+/*global d3 */
+
 angular.module('svgChartsApp')
   .factory('SvgChartsCandlestickChart', function (SvgChartsScene) {
 
     var SvgChartsCandlestickChart = {};
 
-    SvgChartsCandlestickChart.init = function() {
+    SvgChartsCandlestickChart.init = function () {
 
       this.candleStickContainer = SvgChartsScene.svgContent.append('g')
-        .attr('name', 'candleStickBars')
+        .attr('name', 'candleStickBars');
     };
 
-    SvgChartsCandlestickChart.cleanUp = function() {
+    SvgChartsCandlestickChart.cleanUp = function () {
 
-      if(this.bars) {
+      if (this.bars) {
         this.bars.remove();
         this.bars.selectAll('.candlestick-rectangles').remove();
       }
@@ -36,7 +39,7 @@ angular.module('svgChartsApp')
       });
 
 
-    var isUpDay = function(d) {
+    var isUpDay = function (d) {
       return d.close > d.open;
     };
 
@@ -67,9 +70,7 @@ angular.module('svgChartsApp')
         })
         .attr('width', rectangleWidth * 2)
         .attr('height', function (d) {
-          return isUpDay(d)
-            ? SvgChartsScene.y(d.open) - SvgChartsScene.y(d.close)
-            : SvgChartsScene.y(d.close) - SvgChartsScene.y(d.open);
+          return isUpDay(d) ? SvgChartsScene.y(d.open) - SvgChartsScene.y(d.close) : SvgChartsScene.y(d.close) - SvgChartsScene.y(d.open);
         });
 
     };
@@ -88,8 +89,8 @@ angular.module('svgChartsApp')
       this.bars.exit().remove();
 
       this.bars.attr({
-        'fill': function(d) {
-          return  isUpDay(d) ? 'green' : 'red';
+        'fill': function (d) {
+          return isUpDay(d) ? 'green' : 'red';
         }
       });
 
@@ -107,13 +108,13 @@ angular.module('svgChartsApp')
         .ease("linear")
         .attr('d', function (d) {
           return line([
-            { x: SvgChartsScene.x(d.date), y: SvgChartsScene.y(d.high) },
-            { x: SvgChartsScene.x(d.date), y: SvgChartsScene.y(d.low) }
+            {x: SvgChartsScene.x(d.date), y: SvgChartsScene.y(d.high)},
+            {x: SvgChartsScene.x(d.date), y: SvgChartsScene.y(d.low)}
           ]);
         })
         .attr({
-          'stroke': function(d) {
-            return  isUpDay(d) ? 'green' : 'red';
+          'stroke': function (d) {
+            return isUpDay(d) ? 'green' : 'red';
           }
         });
 

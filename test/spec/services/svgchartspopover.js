@@ -17,6 +17,7 @@ describe('Service: Svgchartspopover', function () {
 
     it('Svgchartspopover should exist', function () {
       expect(Svgchartspopover.http).not.toBeUndefined();
+      expect(testData).not.toBeUndefined();
     });
 
   });
