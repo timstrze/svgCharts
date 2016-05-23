@@ -57,8 +57,32 @@ angular.module('svgChartsApp')
      */
 
     Constants.themeTypes = [
-      font: 'rgb(155,225,151)',
-
+      {
+        slug: 'default',
+        title: 'Default',
+        font: 'rgba(0,0,0,0.54)',
+        background: '#FFFFFF'
+      }, {
+        slug: 'dark',
+        title: 'Dark',
+        font: '#FFFFFF',
+        background: '#272727'
+      }, {
+        slug: 'darkPurple',
+        title: 'Dark Purple',
+        font: '#FFFFFF',
+        background: 'rgb(14,15,20)'
+      }, {
+        slug: 'mintGreen',
+        title: 'Mint Green',
+        font: 'rgba(0,0,0,0.54)',
+        background: 'rgb(210,211,209)'
+      }, {
+        slug: 'autumn',
+        title: 'Autumn',
+        font: 'rgba(0,0,0,0.54)',
+        background: 'rgb(255,228,143)'
+      }
     ];
 
 
