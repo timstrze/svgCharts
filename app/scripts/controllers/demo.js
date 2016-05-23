@@ -37,7 +37,6 @@ angular.module('svgChartsApp')
       $http.get('json/symbols.json').then(function (results) {
         _this.Symbols = results.data.quote;
         _this.selectedSymbol = _this.Symbols[0];
-
       });
     };
 

@@ -60,7 +60,7 @@ angular.module('svgChartsApp')
       {
         slug: 'default',
         title: 'Default',
-        font: '#4682B4',
+        font: 'rgba(0,0,0,0.54)',
         background: '#FFFFFF'
       }, {
         slug: 'dark',

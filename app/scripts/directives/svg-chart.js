@@ -139,26 +139,12 @@ angular.module('svgChartsApp')
 
         $scope.changeTheme = function (backgroundColor, fontColor) {
 
-          // if (type === 'dark') {
-
             SvgChartsScene.svg.attr('style', 'background-color:' + backgroundColor);
 
             SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:' + fontColor);
             SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:' + fontColor);
 
             SvgChartsLineChart.gradientStart.attr('stop-color', backgroundColor);
-
-
-          // } else {
-          //   SvgChartsScene.svg.attr('style', 'background-color:#fff');
-          //
-          //   SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
-          //   SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:rgba(0,0,0,0.54);');
-          //
-          //   SvgChartsLineChart.gradientStart.attr('stop-color', '#fff');
-          //
-          // }
-
         };
 
 
@@ -238,7 +224,7 @@ angular.module('svgChartsApp')
           $scope.previousSelectedExtras = $scope.selectedExtras;
 
 
-          SvgChartsAxis.renderXYAxis();
+          SvgChartsAxis.renderXYAxis($scope.selectedTheme.background, $scope.selectedTheme.font);
 
 
           if ($scope.selectedTheme && $scope.selectedTheme.background && $scope.selectedTheme.font) {
