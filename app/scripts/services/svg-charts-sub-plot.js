@@ -58,42 +58,43 @@ angular.module('svgChartsApp')
 
       var subPlots = SvgChartsScene.subPlots;
 
-      if(subPlots && subPlots.length > 0) {
-
-        var subPlotCircles = this.subPlotPoints.selectAll('.subplot-points')
-          .data(subPlots);
-
-        subPlotCircles
-          .enter()
-          .append('circle')
-          .attr('style', 'cursor: pointer;')
-          .attr('class', 'subplot-points')
-          .on('click', function(d) {
-            console.log(d);
-          });
-
-        subPlotCircles.exit().remove();
-
-        subPlotCircles
-          .transition()
-          .duration(500)
-          .ease("linear")
-          .attr('fill', function (d) {
-            return d.color || 'black';
-          })
-          .attr('stroke', function (d) {
-            return d.strokeColor || '#fff';
-          })
-          .attr('cx', function(d) {
-            return SvgChartsScene.x(d.date);
-          })
-          .attr('cy', function (d) {
-            return SvgChartsScene.y(d.ask);
-          })
-          .attr('r', function(d) {
-            return d.size || 4;
-          });
+      if(!subPlots) {
+        subPlots = [];
       }
+
+      var subPlotCircles = this.subPlotPoints.selectAll('.subplot-points')
+        .data(subPlots);
+
+      subPlotCircles
+        .enter()
+        .append('circle')
+        .attr('style', 'cursor: pointer;')
+        .attr('class', 'subplot-points')
+        .on('click', function(d) {
+          console.log(d);
+        });
+
+      subPlotCircles.exit().remove();
+
+      subPlotCircles
+        .transition()
+        .duration(500)
+        .ease("linear")
+        .attr('fill', function (d) {
+          return d.color || 'black';
+        })
+        .attr('stroke', function (d) {
+          return d.strokeColor || '#fff';
+        })
+        .attr('cx', function(d) {
+          return SvgChartsScene.x(d.date);
+        })
+        .attr('cy', function (d) {
+          return SvgChartsScene.y(d.ask);
+        })
+        .attr('r', function(d) {
+          return d.size || 4;
+        });
     };
 
 

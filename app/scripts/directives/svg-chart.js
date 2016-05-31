@@ -94,8 +94,6 @@ angular.module('svgChartsApp')
                 color: 'green'
               };
             });
-          }else{
-            SvgChartsScene.subPlots = [];
           }
 
         };
