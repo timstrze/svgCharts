@@ -1541,9 +1541,9 @@ angular.module('svgChartsApp')
       subPlotCircles.exit().remove();
 
       subPlotCircles
-        .transition()
-        .duration(500)
-        .ease("linear")
+        // .transition()
+        // .duration(500)
+        // .ease("linear")
         .attr('fill', function (d) {
           return d.color || 'black';
         })
