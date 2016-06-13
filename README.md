@@ -1,7 +1,8 @@
 # Svg Charts
 Built using AngularJS and D3.js for visualizations.
 
-![alt tag] (https://github.com/timstrze/svgCharts/blob/master/app/images/screenshot.png)
+![alt tag] (https://github.com/timstrze/svgCharts/blob/master/app/images/screen-shot.png)
+![alt tag] (https://github.com/timstrze/svgCharts/blob/master/app/images/screen-shot-2.png)
 
 ## First Install
 
