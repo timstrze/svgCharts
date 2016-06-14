@@ -13,9 +13,7 @@ angular.module('svgChartsApp')
 
     var SvgChartsSubPlot = {};
 
-
-
-
+    
 
     /**
      * @ngdoc function
@@ -25,10 +23,8 @@ angular.module('svgChartsApp')
      * @description
      * Public access to the GET, PUT, and POST methods
      *
-     * @param {String} ID of the SvgChartsSubPlot
      */
     SvgChartsSubPlot.init =function() {
-
       this.subPlotPoints = SvgChartsScene.svgContent.append('g')
         .attr('name', 'subPlotPoints');
     };
@@ -43,16 +39,10 @@ angular.module('svgChartsApp')
      * @description
      * Public access to the GET, PUT, and POST methods
      *
-     * @param {String} ID of the SvgChartsSubPlot
      */
     SvgChartsSubPlot.cleanUp =function() {
-
       this.subPlotPoints.selectAll('.subplot-points').remove();
-
     };
-
-
-
 
     SvgChartsSubPlot.renderSubPlots = function () {
 
@@ -96,8 +86,6 @@ angular.module('svgChartsApp')
           return d.size || 4;
         });
     };
-
-
 
     return SvgChartsSubPlot;
 

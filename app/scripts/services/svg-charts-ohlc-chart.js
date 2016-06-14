@@ -16,13 +16,10 @@ angular.module('svgChartsApp')
     var SvgChartsOHLCChart = {};
 
     SvgChartsOHLCChart.init = function() {
-
       this.ohlcContainer = SvgChartsScene.svgContent.append('g')
         .attr('name', 'ohlcBars');
-
     };
-
-
+    
     var line = d3.svg.line()
       .x(function (d) {
         return d.x;
@@ -32,17 +29,13 @@ angular.module('svgChartsApp')
       });
 
     SvgChartsOHLCChart.cleanUp = function() {
-
       if(this.bars) {
         this.bars.remove();
         this.bars.selectAll('.high-low-line').remove();
         this.bars.selectAll('.open-tick').remove();
         this.bars.selectAll('.close-tick').remove();
       }
-
     };
-
-
 
     var isUpDay = function(d) {
       return d.close > d.open;
@@ -100,10 +93,8 @@ angular.module('svgChartsApp')
 
     };
 
-
-
     SvgChartsOHLCChart.render = function () {
-
+      //
       this.bars = this.ohlcContainer.selectAll('.ohlc-bar')
         .data(SvgChartsScene.chartData, function (d) {
           return d.date;

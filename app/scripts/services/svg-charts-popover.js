@@ -129,19 +129,16 @@ angular.module('svgChartsApp')
 
     /**
      * @ngdoc function
-     * @name svgChartsPopover.http
+     * @name svgChartsPopover.init
      * @methodOf svgChartsApp.service:svgChartsPopover
      *
      * @description
-     * Public access to the GET, PUT, and POST methods
+     * Initiate the popover svg elements
      *
-     * @param {String} ID of the svgChartsPopover
      */
     SvgChartsPopover.init = function() {
-
     };
-
-
+    
     return SvgChartsPopover;
 
   });

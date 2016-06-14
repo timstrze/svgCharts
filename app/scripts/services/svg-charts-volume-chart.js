@@ -15,19 +15,13 @@ angular.module('svgChartsApp')
 
     var SvgChartsVolumeChart = {};
 
-
     SvgChartsVolumeChart.init = function() {
-
       this.volumeContainer = SvgChartsScene.svgContent.append('g').attr('name', 'volumeContainer');
     };
 
-
     SvgChartsVolumeChart.cleanUp = function() {
-
       this.volumeContainer.selectAll('.volume-rectangles').remove();
-
     };
-
 
     SvgChartsVolumeChart.render = function () {
 
@@ -69,7 +63,6 @@ angular.module('svgChartsApp')
 
 
     };
-
 
     return SvgChartsVolumeChart;
 

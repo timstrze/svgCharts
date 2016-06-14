@@ -15,12 +15,37 @@ angular.module('svgChartsApp')
 
     var SvgChartsCandlestickChart = {};
 
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsCandlestickChart.init
+     * @methodOf svgChartsApp.service:SvgChartsCandlestickChart
+     *
+     * @description
+     * Public access to the GET, PUT, and POST methods
+     *
+     */
     SvgChartsCandlestickChart.init = function () {
 
       this.candleStickContainer = SvgChartsScene.svgContent.append('g')
         .attr('name', 'candleStickBars');
     };
 
+
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsCandlestickChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsCandlestickChart
+     *
+     * @description
+     * Remove the svg items
+     *
+     */
     SvgChartsCandlestickChart.cleanUp = function () {
 
       if (this.bars) {
@@ -75,6 +100,19 @@ angular.module('svgChartsApp')
 
     };
 
+
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsCandlestickChart.render
+     * @methodOf svgChartsApp.service:SvgChartsCandlestickChart
+     *
+     * @description
+     * Render the candlestick data
+     *
+     */
     SvgChartsCandlestickChart.render = function () {
 
       this.bars = this.candleStickContainer.selectAll('.candlestick-bar')

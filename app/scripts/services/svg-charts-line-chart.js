@@ -14,10 +14,8 @@ angular.module('svgChartsApp')
   .factory('SvgChartsLineChart', function (SvgChartsScene) {
 
     var SvgChartsLineChart = {};
-
-
+    
     SvgChartsLineChart.init = function() {
-
       this.gradient = SvgChartsScene.svgContent.append('svg:defs')
         .append('svg:linearGradient')
         .attr('id', 'gradient')
@@ -45,12 +43,10 @@ angular.module('svgChartsApp')
       SvgChartsLineChart.chartLine = SvgChartsScene.svgContent.append('path').attr('name', 'chartLine');
     };
 
-
     SvgChartsLineChart.cleanUp = function() {
       SvgChartsLineChart.chartArea.attr('d', function() {});
       SvgChartsLineChart.chartLine.attr('d', function() {});
     };
-
 
     SvgChartsLineChart.render = function () {
 
@@ -84,8 +80,7 @@ angular.module('svgChartsApp')
         .attr('d', line)
         .attr('style', 'fill: none;stroke: steelblue;stroke-width: 1.5px;');
     };
-
-
+    
     return SvgChartsLineChart;
 
   });

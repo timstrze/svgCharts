@@ -14,18 +14,14 @@ angular.module('svgChartsApp')
   .factory('SvgChartsKagiChart', function (SvgChartsScene) {
 
     var SvgChartsKagiChart = {};
-
-
+    
     SvgChartsKagiChart.init = function() {
-
       this.kagiLine = SvgChartsScene.svgContent.append('path').attr('name', 'kagiLine');
     };
-
-
+    
     SvgChartsKagiChart.cleanUp = function() {
       this.kagiLine.attr('d', function() {});
     };
-
 
     SvgChartsKagiChart.render = function () {
       // var _this = this;
@@ -184,7 +180,6 @@ angular.module('svgChartsApp')
         .attr('d', line)
         .attr('style', 'fill: none;stroke: steelblue;stroke-width: 1.5px;');
     };
-
 
     return SvgChartsKagiChart;
 
