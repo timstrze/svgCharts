@@ -23,7 +23,6 @@ angular.module('svgChartsApp')
     /**
      * @ngdoc function
      * @name SvgChartsAxis.init
-     * @name SvgChartsAxis.init
      * @methodOf svgChartsApp.service:SvgChartsAxis
      *
      * @description
