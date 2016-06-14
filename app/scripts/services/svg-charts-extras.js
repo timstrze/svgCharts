@@ -15,29 +15,17 @@ angular.module('svgChartsApp')
   .factory('SvgChartsExtras', function (SvgChartsScene) {
 
     var SvgChartsExtras = {};
+    
 
-    SvgChartsExtras.init = function () {
-      this.bollingerBandArea = SvgChartsScene.svgContent.append('svg:path')
-        .attr('class', 'bollinger-band-area')
-        .attr('style', 'fill: grey;').attr('fill-opacity', 0.2);
-
-      this.bollingerBandHigh = SvgChartsScene.svgContent.append('svg:path')
-        .attr('class', 'band bollinger-band-high')
-        .attr('style', 'stroke: black; fill: none;');
-
-      this.bollingerBandLow = SvgChartsScene.svgContent.append('svg:path')
-        .attr('class', 'band bollinger-band-low')
-        .attr('style', 'stroke: black; fill: none;');
-
-      this.movingAvgLine = SvgChartsScene.svgContent.append('svg:path')
-        .attr('class', 'moving-average')
-        .attr('style', 'stroke: #FF9900; fill: none;');
-
-      this.chartPlotPoints = SvgChartsScene.svgContent.append('g')
-        .attr('name', 'chartPlotPoints');
-
-    };
-
+    /**
+     * @ngdoc function
+     * @name movingAvg
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     var movingAvg = function (n) {
       return function (points) {
         points = points.map(function (each, index, array) {
@@ -64,11 +52,64 @@ angular.module('svgChartsApp')
       };
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
+    SvgChartsExtras.init = function () {
+      this.bollingerBandArea = SvgChartsScene.svgContent.append('svg:path')
+        .attr('class', 'bollinger-band-area')
+        .attr('style', 'fill: grey;').attr('fill-opacity', 0.2);
+
+      this.bollingerBandHigh = SvgChartsScene.svgContent.append('svg:path')
+        .attr('class', 'band bollinger-band-high')
+        .attr('style', 'stroke: black; fill: none;');
+
+      this.bollingerBandLow = SvgChartsScene.svgContent.append('svg:path')
+        .attr('class', 'band bollinger-band-low')
+        .attr('style', 'stroke: black; fill: none;');
+
+      this.movingAvgLine = SvgChartsScene.svgContent.append('svg:path')
+        .attr('class', 'moving-average')
+        .attr('style', 'stroke: #FF9900; fill: none;');
+
+      this.chartPlotPoints = SvgChartsScene.svgContent.append('g')
+        .attr('name', 'chartPlotPoints');
+
+    };
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.movingAverageCleanup
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsExtras.movingAverageCleanup = function () {
       this.movingAvgLine.attr('d', function () {
       });
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.renderMovingAverage
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsExtras.renderMovingAverage = function () {
 
       var movingAverageLine = d3.svg.line()
@@ -87,8 +128,17 @@ angular.module('svgChartsApp')
         .attr('d', movingAverageLine(SvgChartsScene.chartData));
     };
 
-    SvgChartsExtras.renderBollingerBands = function () {
 
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.renderBollingerBands
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
+    SvgChartsExtras.renderBollingerBands = function () {
       //var _movingSum;
       var bollingerBandLow = d3.svg.line()
         .x(function (d) {
@@ -140,19 +190,49 @@ angular.module('svgChartsApp')
         .attr('d', bollingerBandArea(SvgChartsScene.chartData));
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.bollingerBandsCleanup
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsExtras.bollingerBandsCleanup = function () {
-      this.bollingerBandHigh.attr('d', function () {
-      });
-      this.bollingerBandLow.attr('d', function () {
-      });
-      this.bollingerBandArea.attr('d', function () {
-      });
+      // Remove the bollinger bands high
+      this.bollingerBandHigh.attr('d', function () {});
+      // Remove the bollinger bands high
+      this.bollingerBandLow.attr('d', function () {});
+      // Remove the bollinger bands area
+      this.bollingerBandArea.attr('d', function () {});
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.cleanUpDataPoints
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsExtras.cleanUpDataPoints = function () {
       this.chartPlotPoints.selectAll('.data-points').remove();
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.renderDataPoints
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render data points
+     *
+     */
     SvgChartsExtras.renderDataPoints = function () {
 
       var dataPoints = this.chartPlotPoints.selectAll('.data-points')

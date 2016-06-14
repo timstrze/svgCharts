@@ -14,7 +14,17 @@ angular.module('svgChartsApp')
   .factory('SvgChartsLineChart', function (SvgChartsScene) {
 
     var SvgChartsLineChart = {};
-    
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsLineChart.init
+     * @methodOf svgChartsApp.service:SvgChartsLineChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsLineChart.init = function() {
       this.gradient = SvgChartsScene.svgContent.append('svg:defs')
         .append('svg:linearGradient')
@@ -43,11 +53,31 @@ angular.module('svgChartsApp')
       SvgChartsLineChart.chartLine = SvgChartsScene.svgContent.append('path').attr('name', 'chartLine');
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsLineChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsLineChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsLineChart.cleanUp = function() {
       SvgChartsLineChart.chartArea.attr('d', function() {});
       SvgChartsLineChart.chartLine.attr('d', function() {});
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsLineChart.render
+     * @methodOf svgChartsApp.service:SvgChartsLineChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsLineChart.render = function () {
 
       var line = d3.svg.line()
@@ -80,7 +110,8 @@ angular.module('svgChartsApp')
         .attr('d', line)
         .attr('style', 'fill: none;stroke: steelblue;stroke-width: 1.5px;');
     };
-    
+
+
     return SvgChartsLineChart;
 
   });

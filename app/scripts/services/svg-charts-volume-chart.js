@@ -14,32 +14,67 @@ angular.module('svgChartsApp')
   .factory('SvgChartsVolumeChart', function (SvgChartsScene) {
 
     var SvgChartsVolumeChart = {};
-
+    
+    
+    
+    /**
+     * @ngdoc function
+     * @name SvgChartsVolumeChart.init
+     * @methodOf svgChartsApp.service:SvgChartsVolumeChart
+     *
+     * @description
+     * Create svg items
+     *
+     */
     SvgChartsVolumeChart.init = function() {
       this.volumeContainer = SvgChartsScene.svgContent.append('g').attr('name', 'volumeContainer');
     };
-
+    
+    
+    
+    
+    /**
+     * @ngdoc function
+     * @name SvgChartsVolumeChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsVolumeChart
+     *
+     * @description
+     * Create svg items
+     *
+     */
     SvgChartsVolumeChart.cleanUp = function() {
       this.volumeContainer.selectAll('.volume-rectangles').remove();
     };
 
-    SvgChartsVolumeChart.render = function () {
 
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsVolumeChart.render
+     * @methodOf svgChartsApp.service:SvgChartsVolumeChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
+    SvgChartsVolumeChart.render = function () {
+      //
       SvgChartsScene.y.domain(d3.extent(SvgChartsScene.chartData, function (d) {
         return d.volume;
       }));
-
+      //
       var rect;
       var rectangleWidth = 8;
-
+      // 
       rect = this.volumeContainer.selectAll('.volume-rectangles').data(SvgChartsScene.chartData);
-
+      // 
       rect.enter().append('rect')
         .classed('volume-rectangles', true)
         .on('click', function(d) {console.log(d);});
-
+      // 
       rect.exit().remove();
-
+      // 
       rect
         .transition()
         .duration(500)
@@ -59,9 +94,6 @@ angular.module('svgChartsApp')
         .attr('height', function (d) {
           return SvgChartsScene.height - SvgChartsScene.y(d.volume);
         });
-
-
-
     };
 
     return SvgChartsVolumeChart;

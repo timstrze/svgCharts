@@ -127,6 +127,7 @@ angular.module('svgChartsApp')
         slug: 'volume-chart'
       }
     ];
+    
 
     /**
      * @ngdoc function
@@ -147,6 +148,15 @@ angular.module('svgChartsApp')
     ];
 
 
+    /**
+     * @ngdoc property
+     * @name Constants.subPlots
+     * @propertyOf svgChartsApp.service:Constants
+     *
+     * @description
+     * Returns an sub plot points
+     *
+     */
     Constants.subPlots = [
       {
         "symbol":"AXP",
@@ -200,6 +210,7 @@ angular.module('svgChartsApp')
       }
     ];
 
+    
     /**
      * @ngdoc function
      * @name Constants.chartTypes
@@ -233,8 +244,6 @@ angular.module('svgChartsApp')
         slug: 'split-view'
       }
     ];
-
-
 
 
     /**

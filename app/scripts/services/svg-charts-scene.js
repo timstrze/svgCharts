@@ -16,6 +16,19 @@ angular.module('svgChartsApp')
 
     var SvgChartsScene = {};
 
+
+
+
+
+    /**
+     * @ngdoc property
+     * @name SvgChartsScene.margin
+     * @propertyOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.margin = {
       top: 20,
       right: 40,
@@ -23,16 +36,96 @@ angular.module('svgChartsApp')
       left: 0
     };
 
+
+
+
+
+    /**
+     * @ngdoc property
+     * @name SvgChartsScene.height
+     * @propertyOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.height = 100;
 
+
+
+
+
+    /**
+     * @ngdoc property
+     * @name SvgChartsScene.width
+     * @propertyOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.width = 100;
 
+
+
+
+
+    /**
+     * @ngdoc property
+     * @name SvgChartsScene.parseDate
+     * @propertyOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.parseDate = d3.time.format('%Y-%m-%d').parse;
 
+
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsScene.x
+     * @methodOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.x = function() {};
 
+
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsScene.y
+     * @methodOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.y = function() {};
 
+
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsScene.init
+     * @methodOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     * @param {Object} element Html element
+     *
+     */
     SvgChartsScene.init = function (element) {
       this.svg = d3.select(element[0].querySelector('.svg-chart'))
         .attr('name', 'svgChart')

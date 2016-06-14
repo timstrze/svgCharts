@@ -13,7 +13,6 @@ angular.module('svgChartsApp')
 
     var SvgChartsSubPlot = {};
 
-    
 
     /**
      * @ngdoc function
@@ -30,7 +29,6 @@ angular.module('svgChartsApp')
     };
 
 
-
     /**
      * @ngdoc function
      * @name SvgChartsSubPlot.cleanUp
@@ -44,6 +42,16 @@ angular.module('svgChartsApp')
       this.subPlotPoints.selectAll('.subplot-points').remove();
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsSubPlot.renderSubPlots
+     * @methodOf svgChartsApp.service:SvgChartsSubPlot
+     *
+     * @description
+     * Public access to the GET, PUT, and POST methods
+     *
+     */
     SvgChartsSubPlot.renderSubPlots = function () {
 
       var subPlots = SvgChartsScene.subPlots;

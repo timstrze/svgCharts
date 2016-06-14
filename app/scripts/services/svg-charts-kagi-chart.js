@@ -14,15 +14,45 @@ angular.module('svgChartsApp')
   .factory('SvgChartsKagiChart', function (SvgChartsScene) {
 
     var SvgChartsKagiChart = {};
-    
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsKagiChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsKagiChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsKagiChart.init = function() {
       this.kagiLine = SvgChartsScene.svgContent.append('path').attr('name', 'kagiLine');
     };
-    
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsKagiChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsKagiChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsKagiChart.cleanUp = function() {
       this.kagiLine.attr('d', function() {});
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsKagiChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsKagiChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsKagiChart.render = function () {
       // var _this = this;
       //
