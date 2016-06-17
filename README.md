@@ -1,4 +1,7 @@
-# Svg Charts
+# Angular Svg Charts
+Charting software that can be used as a stand alone application or used as an AngularJS directive. This is currently under construction
+and I am currently building out the Kagi chart logic.
+
 Built using AngularJS and D3.js for visualizations.
 
 ![alt tag] (https://github.com/timstrze/svgCharts/blob/master/app/images/screen-shot.png)

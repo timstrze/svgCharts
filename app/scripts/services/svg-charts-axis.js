@@ -15,7 +15,7 @@ angular.module('svgChartsApp')
   .factory('SvgChartsAxis', function (SvgChartsScene) {
 
     var SvgChartsAxis = {};
-    
+
 
 
 
@@ -33,9 +33,9 @@ angular.module('svgChartsApp')
       SvgChartsAxis.xAxis = SvgChartsScene.svgContent.append('g').attr('name', 'xAxis');
       //
       SvgChartsAxis.yAxis = SvgChartsScene.svgContent.append('g').attr('name', 'yAxis');
-      // 
+      //
       SvgChartsAxis.horizontalGrid = SvgChartsScene.svgContent.append('g').attr('name', 'horizontalGrid');
-      // 
+      //
       SvgChartsAxis.verticalGrid = SvgChartsScene.svgContent.append('g').attr('name', 'verticalGrid');
     };
 
@@ -49,7 +49,7 @@ angular.module('svgChartsApp')
      * @methodOf svgChartsApp.service:SvgChartsAxis
      *
      * @description
-     * Render the X Y Axis
+     * Render the X and Y Axis
      *
      * @param {String} backgroundColor of the background
      * @param {String} fontColor of the font color
