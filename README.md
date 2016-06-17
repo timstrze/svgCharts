@@ -1,6 +1,6 @@
 # Angular Svg Charts
-Charting software that can be used as a stand alone application or used as an AngularJS directive. Feed the application data and it will update
-in real time. Control the look to customize the charts.
+SVG charting software that can be used as a stand alone application or used as an AngularJS directive. Feed the application data and it will update
+in real time. Dynamically customize the look by changing the colors of the text and axis lines.
 
 *This is currently under construction and I am currently building out the Kagi chart logic.
 
