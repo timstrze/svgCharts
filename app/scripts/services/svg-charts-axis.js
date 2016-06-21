@@ -29,13 +29,10 @@ angular.module('svgChartsApp')
      *
      */
     SvgChartsAxis.init = function () {
-      //
+      // Create container items
       SvgChartsAxis.xAxis = SvgChartsScene.svgContent.append('g').attr('name', 'xAxis');
-      //
       SvgChartsAxis.yAxis = SvgChartsScene.svgContent.append('g').attr('name', 'yAxis');
-      //
       SvgChartsAxis.horizontalGrid = SvgChartsScene.svgContent.append('g').attr('name', 'horizontalGrid');
-      //
       SvgChartsAxis.verticalGrid = SvgChartsScene.svgContent.append('g').attr('name', 'verticalGrid');
     };
 
@@ -55,17 +52,17 @@ angular.module('svgChartsApp')
      * @param {String} fontColor of the font color
      */
     SvgChartsAxis.renderXYAxis = function (backgroundColor, fontColor) {
-      //
+      // Scale the x axis and position it on the bottom
       var xAxis = d3.svg.axis()
         .scale(SvgChartsScene.x)
         .orient('bottom');
-      //
+      // Calculate how many ticks to show
       xAxis.ticks(SvgChartsScene.width / 120);
-      //
+      // Scale the y axis and position it to the right
       var yAxis = d3.svg.axis()
         .scale(SvgChartsScene.y)
         .orient('right');
-      //
+      // Calculate how many ticks to show
       yAxis.ticks(SvgChartsScene.height / 100);
       //
       SvgChartsAxis.xAxis
