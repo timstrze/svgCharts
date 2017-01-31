@@ -45,7 +45,7 @@ angular
 
 angular.module('svgChartsApp')
   .directive('svgChart', function ($window, $mdMedia, SvgChartsScene, SvgChartsAxis, SvgChartsCandlestickChart,
-                                   SvgChartsLineChart, SvgChartsOHLCChart, SvgChartsExtras,
+                                   SvgChartsLineChart, SvgChartsOHLCChart, SvgChartsExtras, SvgChartsPopover,
                                    SvgChartsSubPlot, SvgChartsVolumeChart, SvgChartsKagiChart) {
     return {
       scope: {
@@ -58,44 +58,39 @@ angular.module('svgChartsApp')
       template: '<svg class="svg-chart"><g name="svgContent" class="svg-chart-content"></g></svg>',
       link: function postLink($scope, element) {
 
-
+        // Initiate the scene
         SvgChartsScene.init(element);
-
-
         // Line chart elements
         SvgChartsLineChart.init();
-
-
         // Line chart elements
         SvgChartsVolumeChart.init();
-
-
         // Line chart elements
         SvgChartsKagiChart.init();
-
-
         // Line chart elements
         SvgChartsOHLCChart.init();
-
-
+        // Candlestick chart elements
         SvgChartsCandlestickChart.init();
-
-
-        //
+        // Moving Average, Data Points, and Split View elements
         SvgChartsExtras.init();
-
-
-        //
+        // Sub Plot points elements
         SvgChartsSubPlot.init();
-
-
-        // Axis
+        // Axis elements
         SvgChartsAxis.init();
+        // Pop over windows
+        SvgChartsPopover.init();
 
 
-        // Functions
+        /**
+         * @ngdoc function
+         * @name formatData
+         * @methodOf svgChartsApp.directive:base-chart
+         *
+         * @description
+         * Format the data
+         *
+         */
         $scope.formatData = function () {
-
+          // Check to see if there is chart data
           if ($scope.chartData && $scope.chartData.length) {
             // Format the historical data for d3
             SvgChartsScene.chartData = $scope.chartData.map(function (d) {
@@ -109,9 +104,9 @@ angular.module('svgChartsApp')
               };
             });
           }
-
-
+          // Check to see if there is sub plot data
           if ($scope.subPlots && $scope.subPlots.length) {
+            // Format the historical data for d3
             SvgChartsScene.subPlots = $scope.subPlots.map(function (d) {
               return {
                 date: SvgChartsScene.parseDate(d.created.split(' ')[0]),
@@ -122,68 +117,96 @@ angular.module('svgChartsApp')
                 color: 'green'
               };
             });
-          }else{
+          } else {
+            // Create an empty sub plot array
             SvgChartsScene.subPlots = [];
           }
-
         };
 
 
-        $scope.resizeScene = function () {
 
+        /**
+         * @ngdoc function
+         * @name resizeScene
+         * @methodOf svgChartsApp.directive:base-chart
+         *
+         * @description
+         * Resize the scene and the x,y scale
+         *
+         */
+        $scope.resizeScene = function () {
           // Get the width of the parent element
           SvgChartsScene.width = element.parent()[0].offsetWidth - SvgChartsScene.margin.left - SvgChartsScene.margin.right;
           // Get the height of the parent element
           SvgChartsScene.height = element.parent()[0].offsetHeight - SvgChartsScene.margin.top - SvgChartsScene.margin.bottom;
-
+          // Create the x scale
           SvgChartsScene.x = d3.time.scale()
             .range([0, SvgChartsScene.width]);
-
+          // Create the y scale
           SvgChartsScene.y = d3.scale.linear()
             .range([SvgChartsScene.height, 0]);
-
+          // Create the x domain
           SvgChartsScene.x.domain(d3.extent(SvgChartsScene.chartData, function (d) {
             return d.date;
           }));
-
-          //var n = 20; // n-period of moving average
-          //var k = 2;  // k times n-period standard deviation above/below moving average
-          //
-          //
-          //var bandsData = $scope.getBollingerBands(n, k, $scope.symbol.historicalData);
-
-
+          // Create the y domain
           SvgChartsScene.y.domain(d3.extent(SvgChartsScene.chartData, function (d) {
             return d.close;
           }));
-
-
+          // Set the width and height of the svg
           SvgChartsScene.svg
             .attr('width', SvgChartsScene.width + SvgChartsScene.margin.left + SvgChartsScene.margin.right)
             .attr('height', SvgChartsScene.height + SvgChartsScene.margin.top + SvgChartsScene.margin.bottom);
-
+          // Scale scene
           SvgChartsScene.svgContent
             .attr('transform', 'translate(' + SvgChartsScene.margin.left + ',' + SvgChartsScene.margin.top + ')');
         };
 
 
+
+
+
+        /**
+         * @ngdoc function
+         * @name changeTheme
+         * @methodOf svgChartsApp.directive:base-chart
+         *
+         * @description
+         * Format the data
+         *
+         */
         $scope.changeTheme = function (backgroundColor, fontColor) {
-
+            // Set the background color
             SvgChartsScene.svg.attr('style', 'background-color:' + backgroundColor);
-
+            // Set the text color of the x axis
             SvgChartsAxis.xAxis.selectAll('text').attr('style', 'fill:' + fontColor);
+            // Set the text color of the y axis
             SvgChartsAxis.yAxis.selectAll('text').attr('style', 'fill:' + fontColor);
-
+            // Set the background color of the background for the line chart
             SvgChartsLineChart.gradientStart.attr('stop-color', backgroundColor);
         };
 
 
+
+
+
+        /**
+         * @ngdoc function
+         * @name render
+         * @methodOf svgChartsApp.directive:base-chart
+         *
+         * @description
+         * Render the scene
+         *
+         */
         $scope.render = function () {
-
+          // Format the data
+          // TODO: remove this and format before it gets to the directive
           $scope.formatData();
-
+          // Resize the scene
           $scope.resizeScene();
-
+          // TODO: Remove the manual initiation of features
+          // Set the selected chart
           if ($scope.selectedChart === 'ohlc-chart') {
             SvgChartsKagiChart.cleanUp();
             SvgChartsVolumeChart.cleanUp();
@@ -191,7 +214,6 @@ angular.module('svgChartsApp')
             SvgChartsLineChart.cleanUp();
             SvgChartsOHLCChart.render();
           }
-
           else if ($scope.selectedChart === 'candlestick-chart') {
             SvgChartsKagiChart.cleanUp();
             SvgChartsVolumeChart.cleanUp();
@@ -199,7 +221,6 @@ angular.module('svgChartsApp')
             SvgChartsOHLCChart.cleanUp();
             SvgChartsCandlestickChart.render();
           }
-
           else if ($scope.selectedChart === 'kagi-chart') {
             SvgChartsVolumeChart.cleanUp();
             SvgChartsLineChart.cleanUp();
@@ -207,7 +228,6 @@ angular.module('svgChartsApp')
             SvgChartsCandlestickChart.cleanUp();
             SvgChartsKagiChart.render();
           }
-
           else if ($scope.selectedChart === 'volume-chart') {
             SvgChartsKagiChart.cleanUp();
             SvgChartsLineChart.cleanUp();
@@ -215,7 +235,6 @@ angular.module('svgChartsApp')
             SvgChartsCandlestickChart.cleanUp();
             SvgChartsVolumeChart.render();
           }
-
           else {
             SvgChartsKagiChart.cleanUp();
             SvgChartsVolumeChart.cleanUp();
@@ -224,46 +243,58 @@ angular.module('svgChartsApp')
             SvgChartsLineChart.render();
           }
 
-
+          // SELECTED EXTRAS
+          // TODO: Remove the manual initiation of features
+          // Render the data points
           if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('data-points') > -1) {
             SvgChartsExtras.renderDataPoints();
-          } else {
+          }
+          else {
             SvgChartsExtras.cleanUpDataPoints();
           }
-
+          // Render the moving average
           if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('moving-average') > -1) {
             SvgChartsExtras.renderMovingAverage();
-          } else {
+          }
+          else {
             SvgChartsExtras.movingAverageCleanup();
           }
-
+          // Render the Bollinger Bands
           if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('bollinger-bands') > -1) {
             SvgChartsExtras.renderBollingerBands();
-          } else {
+          }
+          else {
             SvgChartsExtras.bollingerBandsCleanup();
           }
-
+          // Render the sub plot points
           if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('sub-plot-points') > -1) {
             SvgChartsSubPlot.renderSubPlots();
-          } else {
+          }
+          else {
             SvgChartsSubPlot.cleanUp();
           }
 
+          // Remove any previous popovers
+          SvgChartsPopover.cleanUpPopovers();
 
+
+          // Set the previous selected chart
           $scope.previousSelectedChart = $scope.selectedChart;
+          // Set the previous selected extras
           $scope.previousSelectedExtras = $scope.selectedExtras;
-
-
+          // Render the X and Y axis
           SvgChartsAxis.renderXYAxis($scope.selectedTheme.background, $scope.selectedTheme.font);
-
-
+          // Set the theme of the background and font colors
           if ($scope.selectedTheme && $scope.selectedTheme.background && $scope.selectedTheme.font) {
             $scope.changeTheme($scope.selectedTheme.background, $scope.selectedTheme.font);
-          } else {
+          }
+          else {
+            // Set the defaults as white
             $scope.changeTheme('#FFFFFF', '#000000');
           }
-
         };
+
+
 
 
         /**
@@ -276,15 +307,19 @@ angular.module('svgChartsApp')
          *
          */
         $scope.$watch(function () {
+          // Watch the historicalData
           if ($scope.chartData) {
             return JSON.stringify([$scope.chartData, $scope.subPlots, $scope.selectedChart, $scope.selectedExtras, $scope.selectedTheme]);
           }
         }, function () {
           // Make sure there is historical data
           if ($scope.chartData && $scope.chartData.length > 0) {
+            // Render the chart
             $scope.render();
           }
         }, true);
+
+
 
 
         /**
@@ -299,6 +334,7 @@ angular.module('svgChartsApp')
         angular.element($window).on('resize', function () {
           // Make sure there is historical data
           if ($scope.chartData && $scope.chartData.length > 0) {
+            // Render the chart
             $scope.render();
           }
         });
@@ -323,12 +359,37 @@ angular.module('svgChartsApp')
 
     var SvgChartsCandlestickChart = {};
 
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsCandlestickChart.init
+     * @methodOf svgChartsApp.service:SvgChartsCandlestickChart
+     *
+     * @description
+     * Public access to the GET, PUT, and POST methods
+     *
+     */
     SvgChartsCandlestickChart.init = function () {
 
       this.candleStickContainer = SvgChartsScene.svgContent.append('g')
         .attr('name', 'candleStickBars');
     };
 
+
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsCandlestickChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsCandlestickChart
+     *
+     * @description
+     * Remove the svg items
+     *
+     */
     SvgChartsCandlestickChart.cleanUp = function () {
 
       if (this.bars) {
@@ -383,6 +444,19 @@ angular.module('svgChartsApp')
 
     };
 
+
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsCandlestickChart.render
+     * @methodOf svgChartsApp.service:SvgChartsCandlestickChart
+     *
+     * @description
+     * Render the candlestick data
+     *
+     */
     SvgChartsCandlestickChart.render = function () {
 
       this.bars = this.candleStickContainer.selectAll('.candlestick-bar')
@@ -453,8 +527,16 @@ angular.module('svgChartsApp')
     var SvgChartsLineChart = {};
 
 
+    /**
+     * @ngdoc function
+     * @name SvgChartsLineChart.init
+     * @methodOf svgChartsApp.service:SvgChartsLineChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsLineChart.init = function() {
-
       this.gradient = SvgChartsScene.svgContent.append('svg:defs')
         .append('svg:linearGradient')
         .attr('id', 'gradient')
@@ -483,12 +565,30 @@ angular.module('svgChartsApp')
     };
 
 
+    /**
+     * @ngdoc function
+     * @name SvgChartsLineChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsLineChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsLineChart.cleanUp = function() {
       SvgChartsLineChart.chartArea.attr('d', function() {});
       SvgChartsLineChart.chartLine.attr('d', function() {});
     };
 
 
+    /**
+     * @ngdoc function
+     * @name SvgChartsLineChart.render
+     * @methodOf svgChartsApp.service:SvgChartsLineChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsLineChart.render = function () {
 
       var line = d3.svg.line()
@@ -545,13 +645,10 @@ angular.module('svgChartsApp')
     var SvgChartsOHLCChart = {};
 
     SvgChartsOHLCChart.init = function() {
-
       this.ohlcContainer = SvgChartsScene.svgContent.append('g')
         .attr('name', 'ohlcBars');
-
     };
-
-
+    
     var line = d3.svg.line()
       .x(function (d) {
         return d.x;
@@ -561,17 +658,13 @@ angular.module('svgChartsApp')
       });
 
     SvgChartsOHLCChart.cleanUp = function() {
-
       if(this.bars) {
         this.bars.remove();
         this.bars.selectAll('.high-low-line').remove();
         this.bars.selectAll('.open-tick').remove();
         this.bars.selectAll('.close-tick').remove();
       }
-
     };
-
-
 
     var isUpDay = function(d) {
       return d.close > d.open;
@@ -629,10 +722,8 @@ angular.module('svgChartsApp')
 
     };
 
-
-
     SvgChartsOHLCChart.render = function () {
-
+      //
       this.bars = this.ohlcContainer.selectAll('.ohlc-bar')
         .data(SvgChartsScene.chartData, function (d) {
           return d.date;
@@ -702,17 +793,43 @@ angular.module('svgChartsApp')
     var SvgChartsKagiChart = {};
 
 
+    /**
+     * @ngdoc function
+     * @name SvgChartsKagiChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsKagiChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsKagiChart.init = function() {
-
       this.kagiLine = SvgChartsScene.svgContent.append('path').attr('name', 'kagiLine');
     };
 
 
+    /**
+     * @ngdoc function
+     * @name SvgChartsKagiChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsKagiChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsKagiChart.cleanUp = function() {
       this.kagiLine.attr('d', function() {});
     };
 
 
+    /**
+     * @ngdoc function
+     * @name SvgChartsKagiChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsKagiChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsKagiChart.render = function () {
       // var _this = this;
       //
@@ -871,7 +988,6 @@ angular.module('svgChartsApp')
         .attr('style', 'fill: none;stroke: steelblue;stroke-width: 1.5px;');
     };
 
-
     return SvgChartsKagiChart;
 
   });
@@ -887,138 +1003,131 @@ angular.module('svgChartsApp')
  *
  */
 angular.module('svgChartsApp')
-  .factory('SvgChartsPopover', function () {
+  .factory('SvgChartsPopover', function (SvgChartsScene) {
 
     var SvgChartsPopover = {};
 
-    // SvgChartsPopover.test = function(rect) {
-    //
-    //   var popoverTextBoxWidth = 135;
-    //   var popoverTextBoxHeight = 120;
-    //   var popoverTextBoxX;
-    //   var popoverTextBoxY;
-    //
-    //   rect
-    //     .on('click', function(d) {
-    //       var m = d3.mouse($scope.svg.node());
-    //
-    //       popoverTextBoxX = m[0];
-    //       popoverTextBoxY = m[1];
-    //
-    //       if($scope.popoverText || $scope.popoverTextBox) {
-    //         cleanUpPopovers();
-    //       }
-    //
-    //       if(popoverTextBoxY + popoverTextBoxHeight > $scope.height) {
-    //         popoverTextBoxY = popoverTextBoxY - popoverTextBoxHeight;
-    //       }
-    //
-    //       if(popoverTextBoxX + popoverTextBoxWidth > $scope.width) {
-    //         popoverTextBoxX = popoverTextBoxX - popoverTextBoxWidth;
-    //       }
-    //
-    //       $scope.popoverTextBox = $scope.svg.append('rect')
-    //         .attr("x", popoverTextBoxX)
-    //         .attr("y", popoverTextBoxY)
-    //         .attr("rx", 6)
-    //         .attr("ry", 6)
-    //         .attr("width", popoverTextBoxWidth)
-    //         .attr("height", popoverTextBoxHeight)
-    //         .attr("fill", "rgba(0,0,0,0.34)")
-    //         .attr({
-    //           'stroke': 'black',
-    //           'stroke-width': '1px'
-    //         });
-    //
-    //       $scope.popoverText = $scope.svg.append('text')
-    //         .attr("x", popoverTextBoxX)
-    //         .attr("y", popoverTextBoxY)
-    //         .attr('class', 'popover-text')
-    //         .attr('name', 'popover-text')
-    //         .text( function () {
-    //           return  d.Date +
-    //             ' O:' + d.Open +
-    //             ' H:' + d.High +
-    //             ' L:' + d.Low +
-    //             ' C:' + d.Close; })
-    //         .attr("font-family", "sans-serif")
-    //         .attr("font-size", "20px")
-    //         .attr("fill", "white")
-    //         .call(wrap, 125, popoverTextBoxX);
-    //
-    //       $scope.popoverTextBoxCloseText = $scope.svg.append('text')
-    //         .attr("x", popoverTextBoxX + popoverTextBoxWidth - 20 + 5)
-    //         .attr("y", popoverTextBoxY + 20 - 4)
-    //         .text('X');
-    //
-    //       $scope.popoverTextBoxClose = $scope.svg.append('rect')
-    //         .attr("x", popoverTextBoxX + popoverTextBoxWidth - 20 + 2)
-    //         .attr("y", popoverTextBoxY + 2)
-    //         .attr("rx", 6)
-    //         .attr("ry", 6)
-    //         .attr("width", 16)
-    //         .attr("height", 16)
-    //         .attr("fill", "red")
-    //         .attr({
-    //           'stroke': 'black',
-    //           'stroke-width': '1px'
-    //         })
-    //         .attr('style', 'fill-opacity:0.3; cursor: pointer;')
-    //         .on('click', function() {
-    //           cleanUpPopovers();
-    //         });
-    //
-    //     });
-    //
-    // };
-    //
-    //
-    // var cleanUpPopovers = function() {
-    //   //popoverTextBox.remove();
-    //   //popoverTextBoxClose.remove();
-    //   //popoverText.remove();
-    //   //popoverTextBoxCloseText.remove();
-    // };
-    //
-    //
-    // var wrap = function(text, width, popoverTextBoxX) {
-    //   text.each(function() {
-    //     var text = d3.select(this),
-    //       words = text.text().split(/\s+/).reverse(),
-    //       word,
-    //       line = [],
-    //       lineNumber = 0,
-    //       lineHeight = 1.1, // ems
-    //       y = text.attr("y"),
-    //       dy = parseFloat(text.attr("dy")),
-    //       tspan = text.text(null).append("tspan").attr("x", popoverTextBoxX + 3).attr("y", parseInt(y) + 20).attr("dy", 0 + "em");
-    //     while (word = words.pop()) {
-    //       line.push(word);
-    //       tspan.text(line.join(" "));
-    //       if (tspan.node().getComputedTextLength() > width) {
-    //         line.pop();
-    //         tspan.text(line.join(" "));
-    //         line = [word];
-    //         tspan = text.append("tspan").attr("x", popoverTextBoxX + 3).attr("y", parseInt(y) + 20).attr("dy", ++lineNumber + "em").text(word);
-    //       }
-    //     }
-    //   });
-    // };
+    SvgChartsPopover.open = function(_d) {
+
+      var popoverTextBoxWidth = 135;
+      var popoverTextBoxHeight = 120;
+      var popoverTextBoxX;
+      var popoverTextBoxY;
+
+        var m = d3.mouse(SvgChartsScene.svg.node());
+
+        popoverTextBoxX = m[0];
+        popoverTextBoxY = m[1];
+
+        if(popoverTextBoxY + popoverTextBoxHeight > SvgChartsScene.height) {
+          popoverTextBoxY = popoverTextBoxY - popoverTextBoxHeight;
+        }
+
+        if(popoverTextBoxX + popoverTextBoxWidth > SvgChartsScene.width) {
+          popoverTextBoxX = popoverTextBoxX - popoverTextBoxWidth;
+        }
+
+        SvgChartsScene.popoverTextBox
+          .attr('x', popoverTextBoxX)
+          .attr('y', popoverTextBoxY)
+          .attr('rx', 6)
+          .attr('ry', 6)
+          .attr('width', popoverTextBoxWidth)
+          .attr('height', popoverTextBoxHeight)
+          .attr('fill', 'rgba(0,0,0,0.34)')
+          .attr({
+            'stroke': 'black',
+            'stroke-width': '1px'
+          });
+
+        SvgChartsScene.popoverText
+          .attr('x', popoverTextBoxX)
+          .attr('y', popoverTextBoxY + 12)
+          .attr('class', 'popover-text')
+          .attr('name', 'popover-text')
+          .text( function () {
+            return  _d.date.getMonth() + '/' + _d.date.getDay() + '/' + _d.date.getFullYear() +
+              ' O: ' + parseFloat(Math.round(_d.open * 100) / 100).toFixed(2) +
+              ' H: ' + parseFloat(Math.round(_d.high * 100) / 100).toFixed(2) +
+              ' L: ' + parseFloat(Math.round(_d.low * 100) / 100).toFixed(2) +
+              ' C: ' + parseFloat(Math.round(_d.close * 100) / 100).toFixed(2); })
+          .attr('font-family', 'sans-serif')
+          .attr('font-size', '20px')
+          .attr('fill', 'white')
+          .call(wrap, 90, popoverTextBoxX + 4);
+
+        SvgChartsScene.popoverTextBoxCloseText
+          .attr('x', popoverTextBoxX + popoverTextBoxWidth - 20 + 5)
+          .attr('y', popoverTextBoxY + 20 - 4)
+          .text('X');
+
+        SvgChartsScene.popoverTextBoxClose
+          .attr('x', popoverTextBoxX + popoverTextBoxWidth - 20 + 2)
+          .attr('y', popoverTextBoxY + 2)
+          .attr('rx', 6)
+          .attr('ry', 6)
+          .attr('width', 16)
+          .attr('height', 16)
+          .attr('fill', 'red')
+          .attr({
+            'stroke': 'black',
+            'stroke-width': '1px'
+          })
+          .attr('style', 'fill-opacity:0.3; cursor: pointer;')
+          .on('click', function() {
+            SvgChartsPopover.cleanUpPopovers();
+          });
+    };
+
+
+    SvgChartsPopover.cleanUpPopovers = function() {
+      SvgChartsScene.popoverTextBox.attr('x', -500);
+      SvgChartsScene.popoverTextBoxClose.attr('x', -500);
+
+      SvgChartsScene.popoverText.text('');
+      SvgChartsScene.popoverTextBoxCloseText.text('');
+    };
+
+
+    var wrap = function(text, width, popoverTextBoxX) {
+      text.each(function() {
+        var text = d3.select(this),
+          words = text.text().split(/\s+/).reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          y = text.attr('y'),
+          dy = parseFloat(text.attr('dy')),
+          tspan = text.text(null).append('tspan').attr('x', popoverTextBoxX + 3).attr('y', parseInt(y) + 20).attr('dy', 0 + 'em');
+        while (word = words.pop()) {
+          line.push(word);
+          tspan.text(line.join(' '));
+          if (tspan.node().getComputedTextLength() > width) {
+            line.pop();
+            tspan.text(line.join(' '));
+            line = [word];
+            tspan = text.append('tspan').attr('x', popoverTextBoxX + 3).attr('y', parseInt(y) + 20).attr('dy', ++lineNumber + 'em').text(word);
+          }
+        }
+      });
+    };
 
     /**
      * @ngdoc function
-     * @name svgChartsPopover.http
+     * @name svgChartsPopover.init
      * @methodOf svgChartsApp.service:svgChartsPopover
      *
      * @description
-     * Public access to the GET, PUT, and POST methods
+     * Initiate the popover svg elements
      *
-     * @param {String} ID of the svgChartsPopover
      */
     SvgChartsPopover.init = function() {
-
+      SvgChartsScene.popoverTextBox = SvgChartsScene.svg.append('rect');
+      SvgChartsScene.popoverText = SvgChartsScene.svg.append('text');
+      SvgChartsScene.popoverTextBoxCloseText = SvgChartsScene.svg.append('text');
+      SvgChartsScene.popoverTextBoxClose = SvgChartsScene.svg.append('rect');
     };
-
 
     return SvgChartsPopover;
 
@@ -1038,33 +1147,20 @@ angular.module('svgChartsApp')
 /*global d3 */
 
 angular.module('svgChartsApp')
-  .factory('SvgChartsExtras', function (SvgChartsScene) {
+  .factory('SvgChartsExtras', function (SvgChartsScene, SvgChartsPopover) {
 
     var SvgChartsExtras = {};
 
-    SvgChartsExtras.init = function () {
-      this.bollingerBandArea = SvgChartsScene.svgContent.append('svg:path')
-        .attr('class', 'bollinger-band-area')
-        .attr('style', 'fill: grey;').attr('fill-opacity', 0.2);
 
-      this.bollingerBandHigh = SvgChartsScene.svgContent.append('svg:path')
-        .attr('class', 'band bollinger-band-high')
-        .attr('style', 'stroke: black; fill: none;');
-
-      this.bollingerBandLow = SvgChartsScene.svgContent.append('svg:path')
-        .attr('class', 'band bollinger-band-low')
-        .attr('style', 'stroke: black; fill: none;');
-
-      this.movingAvgLine = SvgChartsScene.svgContent.append('svg:path')
-        .attr('class', 'moving-average')
-        .attr('style', 'stroke: #FF9900; fill: none;');
-
-      this.chartPlotPoints = SvgChartsScene.svgContent.append('g')
-        .attr('name', 'chartPlotPoints');
-
-    };
-
-
+    /**
+     * @ngdoc function
+     * @name movingAvg
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     var movingAvg = function (n) {
       return function (points) {
         points = points.map(function (each, index, array) {
@@ -1091,11 +1187,64 @@ angular.module('svgChartsApp')
       };
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
+    SvgChartsExtras.init = function () {
+      this.bollingerBandArea = SvgChartsScene.svgContent.append('svg:path')
+        .attr('class', 'bollinger-band-area')
+        .attr('style', 'fill: grey;').attr('fill-opacity', 0.2);
+
+      this.bollingerBandHigh = SvgChartsScene.svgContent.append('svg:path')
+        .attr('class', 'band bollinger-band-high')
+        .attr('style', 'stroke: black; fill: none;');
+
+      this.bollingerBandLow = SvgChartsScene.svgContent.append('svg:path')
+        .attr('class', 'band bollinger-band-low')
+        .attr('style', 'stroke: black; fill: none;');
+
+      this.movingAvgLine = SvgChartsScene.svgContent.append('svg:path')
+        .attr('class', 'moving-average')
+        .attr('style', 'stroke: #FF9900; fill: none;');
+
+      this.chartPlotPoints = SvgChartsScene.svgContent.append('g')
+        .attr('name', 'chartPlotPoints');
+
+    };
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.movingAverageCleanup
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsExtras.movingAverageCleanup = function () {
       this.movingAvgLine.attr('d', function () {
       });
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.renderMovingAverage
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsExtras.renderMovingAverage = function () {
 
       var movingAverageLine = d3.svg.line()
@@ -1115,8 +1264,16 @@ angular.module('svgChartsApp')
     };
 
 
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.renderBollingerBands
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsExtras.renderBollingerBands = function () {
-
       //var _movingSum;
       var bollingerBandLow = d3.svg.line()
         .x(function (d) {
@@ -1168,41 +1325,49 @@ angular.module('svgChartsApp')
         .attr('d', bollingerBandArea(SvgChartsScene.chartData));
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.bollingerBandsCleanup
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsExtras.bollingerBandsCleanup = function () {
-      this.bollingerBandHigh.attr('d', function () {
-      });
-      this.bollingerBandLow.attr('d', function () {
-      });
-      this.bollingerBandArea.attr('d', function () {
-      });
+      // Remove the bollinger bands high
+      this.bollingerBandHigh.attr('d', function () {});
+      // Remove the bollinger bands high
+      this.bollingerBandLow.attr('d', function () {});
+      // Remove the bollinger bands area
+      this.bollingerBandArea.attr('d', function () {});
     };
 
-    // var getBollingerBands = function (n, k, data) {
-    //   var bands = []; //{ ma: 0, low: 0, high: 0 }
-    //   var stdDev = Math.sqrt(d3.mean(slice.map(function (d) {
-    //     return Math.pow(d.close - mean, 2);
-    //   })));
-    //   for (var i = n - 1, len = data.length; i < len; i++) {
-    //     var slice = data.slice(i + 1 - n, i);
-    //     var mean = d3.mean(slice, function (d) {
-    //       return d.close;
-    //     });
-    //     bands.push({
-    //       date: data[i].date,
-    //       ma: mean,
-    //       low: mean - (k * stdDev),
-    //       high: mean + (k * stdDev)
-    //     });
-    //   }
-    //   return bands;
-    // };
 
-
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.cleanUpDataPoints
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsExtras.cleanUpDataPoints = function () {
       this.chartPlotPoints.selectAll('.data-points').remove();
-
     };
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsExtras.renderDataPoints
+     * @methodOf svgChartsApp.service:SvgChartsExtras
+     *
+     * @description
+     * Render data points
+     *
+     */
     SvgChartsExtras.renderDataPoints = function () {
 
       var dataPoints = this.chartPlotPoints.selectAll('.data-points')
@@ -1215,6 +1380,7 @@ angular.module('svgChartsApp')
         })
         .on('click', function (d) {
           console.log(d);
+          SvgChartsPopover.open(d);
         })
         .attr('style', 'cursor: pointer;')
         .attr('class', 'data-points')
@@ -1238,7 +1404,6 @@ angular.module('svgChartsApp')
         });
 
     };
-
 
     return SvgChartsExtras;
 
@@ -1265,47 +1430,52 @@ angular.module('svgChartsApp')
 
 
 
-
     /**
      * @ngdoc function
-     * @name SvgChartsAxis.init
      * @name SvgChartsAxis.init
      * @methodOf svgChartsApp.service:SvgChartsAxis
      *
      * @description
-     * Public access to the GET, PUT, and POST methods
+     * Create svg items
      *
-     * @param {String} ID of the SvgChartsAxis
      */
     SvgChartsAxis.init = function () {
+      // Create container items
       SvgChartsAxis.xAxis = SvgChartsScene.svgContent.append('g').attr('name', 'xAxis');
-
       SvgChartsAxis.yAxis = SvgChartsScene.svgContent.append('g').attr('name', 'yAxis');
-
       SvgChartsAxis.horizontalGrid = SvgChartsScene.svgContent.append('g').attr('name', 'horizontalGrid');
-
       SvgChartsAxis.verticalGrid = SvgChartsScene.svgContent.append('g').attr('name', 'verticalGrid');
-
     };
 
+
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsAxis.renderXYAxis
+     * @methodOf svgChartsApp.service:SvgChartsAxis
+     *
+     * @description
+     * Render the X and Y Axis
+     *
+     * @param {String} backgroundColor of the background
+     * @param {String} fontColor of the font color
+     */
     SvgChartsAxis.renderXYAxis = function (backgroundColor, fontColor) {
-
-
+      // Scale the x axis and position it on the bottom
       var xAxis = d3.svg.axis()
         .scale(SvgChartsScene.x)
         .orient('bottom');
-
-
-        xAxis.ticks(SvgChartsScene.width / 120);
-
-
+      // Calculate how many ticks to show
+      xAxis.ticks(SvgChartsScene.width / 120);
+      // Scale the y axis and position it to the right
       var yAxis = d3.svg.axis()
         .scale(SvgChartsScene.y)
         .orient('right');
-
+      // Calculate how many ticks to show
       yAxis.ticks(SvgChartsScene.height / 100);
-
-
+      //
       SvgChartsAxis.xAxis
         .attr('class', 'x axis')
         .attr('transform', 'translate(0,' + (SvgChartsScene.height) + ')')
@@ -1316,8 +1486,7 @@ angular.module('svgChartsApp')
           'shape-rendering': 'crispEdges',
           'stroke': fontColor
         });
-
-
+      //
       SvgChartsAxis.yAxis
         .attr('class', 'y axis')
         .attr('transform', 'translate(' + (SvgChartsScene.width) + ',0)')
@@ -1328,11 +1497,10 @@ angular.module('svgChartsApp')
           'shape-rendering': 'crispEdges',
           'stroke': fontColor
         });
-
-
+      //
       var horizontalGridLine =  SvgChartsAxis.horizontalGrid.selectAll('line')
         .data(SvgChartsScene.y.ticks(SvgChartsScene.height / 100));
-
+      //
       horizontalGridLine
         .enter()
         .append('line')
@@ -1347,9 +1515,9 @@ angular.module('svgChartsApp')
             'stroke-width': '1px',
             'stroke-dasharray': '5, 5'
           });
-
+      //
       horizontalGridLine.exit().remove();
-
+      //
       horizontalGridLine
         .attr(
           {
@@ -1364,11 +1532,10 @@ angular.module('svgChartsApp')
               return fontColor;
             }
           });
-
-
+      //
       var verticalGridLine = SvgChartsAxis.verticalGrid.selectAll('line')
         .data(SvgChartsScene.x.ticks(SvgChartsScene.width / 120));
-
+      //
       verticalGridLine
         .enter()
         .append('line')
@@ -1382,9 +1549,9 @@ angular.module('svgChartsApp')
             'stroke-width': '1px',
             'stroke-dasharray': '5, 5'
           });
-
+      //
       verticalGridLine.exit().remove();
-
+      //
       verticalGridLine
         .attr(
           {
@@ -1400,14 +1567,11 @@ angular.module('svgChartsApp')
               return fontColor;
             }
           });
-
-
+      //
       SvgChartsAxis.xAxis.selectAll('text').attr('stroke-width', '0px');
-
+      //
       SvgChartsAxis.yAxis.selectAll('text').attr('stroke-width', '0px');
-
     };
-
 
     return SvgChartsAxis;
 
@@ -1431,6 +1595,19 @@ angular.module('svgChartsApp')
 
     var SvgChartsScene = {};
 
+
+
+
+
+    /**
+     * @ngdoc property
+     * @name SvgChartsScene.margin
+     * @propertyOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.margin = {
       top: 20,
       right: 40,
@@ -1438,24 +1615,102 @@ angular.module('svgChartsApp')
       left: 0
     };
 
+
+
+
+
+    /**
+     * @ngdoc property
+     * @name SvgChartsScene.height
+     * @propertyOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.height = 100;
+
+
+
+
+
+    /**
+     * @ngdoc property
+     * @name SvgChartsScene.width
+     * @propertyOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.width = 100;
 
+
+
+
+
+    /**
+     * @ngdoc property
+     * @name SvgChartsScene.parseDate
+     * @propertyOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.parseDate = d3.time.format('%Y-%m-%d').parse;
 
 
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsScene.x
+     * @methodOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.x = function() {};
+
+
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsScene.y
+     * @methodOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     */
     SvgChartsScene.y = function() {};
 
-    SvgChartsScene.init = function (element) {
 
+
+
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsScene.init
+     * @methodOf svgChartsApp.service:SvgChartsScene
+     *
+     * @description
+     * Render svg items
+     *
+     * @param {Object} element Html element
+     *
+     */
+    SvgChartsScene.init = function (element) {
       this.svg = d3.select(element[0].querySelector('.svg-chart'))
         .attr('name', 'svgChart')
         .attr('style', 'background-color:#fff');
 
-
       this.svgContent = this.svg.selectAll(".svg-chart-content");
-
     };
 
     return SvgChartsScene;
@@ -1478,9 +1733,6 @@ angular.module('svgChartsApp')
     var SvgChartsSubPlot = {};
 
 
-
-
-
     /**
      * @ngdoc function
      * @name SvgChartsSubPlot.init
@@ -1489,14 +1741,11 @@ angular.module('svgChartsApp')
      * @description
      * Public access to the GET, PUT, and POST methods
      *
-     * @param {String} ID of the SvgChartsSubPlot
      */
     SvgChartsSubPlot.init =function() {
-
       this.subPlotPoints = SvgChartsScene.svgContent.append('g')
         .attr('name', 'subPlotPoints');
     };
-
 
 
     /**
@@ -1507,17 +1756,21 @@ angular.module('svgChartsApp')
      * @description
      * Public access to the GET, PUT, and POST methods
      *
-     * @param {String} ID of the SvgChartsSubPlot
      */
     SvgChartsSubPlot.cleanUp =function() {
-
       this.subPlotPoints.selectAll('.subplot-points').remove();
-
     };
 
 
-
-
+    /**
+     * @ngdoc function
+     * @name SvgChartsSubPlot.renderSubPlots
+     * @methodOf svgChartsApp.service:SvgChartsSubPlot
+     *
+     * @description
+     * Public access to the GET, PUT, and POST methods
+     *
+     */
     SvgChartsSubPlot.renderSubPlots = function () {
 
       var subPlots = SvgChartsScene.subPlots;
@@ -1561,8 +1814,6 @@ angular.module('svgChartsApp')
         });
     };
 
-
-
     return SvgChartsSubPlot;
 
   });
@@ -1583,38 +1834,67 @@ angular.module('svgChartsApp')
   .factory('SvgChartsVolumeChart', function (SvgChartsScene) {
 
     var SvgChartsVolumeChart = {};
-
-
+    
+    
+    
+    /**
+     * @ngdoc function
+     * @name SvgChartsVolumeChart.init
+     * @methodOf svgChartsApp.service:SvgChartsVolumeChart
+     *
+     * @description
+     * Create svg items
+     *
+     */
     SvgChartsVolumeChart.init = function() {
-
       this.volumeContainer = SvgChartsScene.svgContent.append('g').attr('name', 'volumeContainer');
     };
-
-
+    
+    
+    
+    
+    /**
+     * @ngdoc function
+     * @name SvgChartsVolumeChart.cleanUp
+     * @methodOf svgChartsApp.service:SvgChartsVolumeChart
+     *
+     * @description
+     * Create svg items
+     *
+     */
     SvgChartsVolumeChart.cleanUp = function() {
-
       this.volumeContainer.selectAll('.volume-rectangles').remove();
-
     };
 
 
-    SvgChartsVolumeChart.render = function () {
 
+
+    /**
+     * @ngdoc function
+     * @name SvgChartsVolumeChart.render
+     * @methodOf svgChartsApp.service:SvgChartsVolumeChart
+     *
+     * @description
+     * Render svg items
+     *
+     */
+    SvgChartsVolumeChart.render = function () {
+      //
       SvgChartsScene.y.domain(d3.extent(SvgChartsScene.chartData, function (d) {
         return d.volume;
       }));
-
+      //
       var rect;
       var rectangleWidth = 8;
-
+      // 
       rect = this.volumeContainer.selectAll('.volume-rectangles').data(SvgChartsScene.chartData);
-
+      // 
       rect.enter().append('rect')
         .classed('volume-rectangles', true)
         .on('click', function(d) {console.log(d);});
-
+      // 
       rect.exit().remove();
-
+      // 
       rect
         .transition()
         .duration(500)
@@ -1634,11 +1914,7 @@ angular.module('svgChartsApp')
         .attr('height', function (d) {
           return SvgChartsScene.height - SvgChartsScene.y(d.volume);
         });
-
-
-
     };
-
 
     return SvgChartsVolumeChart;
 
