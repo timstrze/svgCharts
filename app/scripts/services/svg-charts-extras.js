@@ -12,10 +12,10 @@
 /*global d3 */
 
 angular.module('svgChartsApp')
-  .factory('SvgChartsExtras', function (SvgChartsScene) {
+  .factory('SvgChartsExtras', function (SvgChartsScene, SvgChartsPopover) {
 
     var SvgChartsExtras = {};
-    
+
 
     /**
      * @ngdoc function
@@ -245,6 +245,7 @@ angular.module('svgChartsApp')
         })
         .on('click', function (d) {
           console.log(d);
+          SvgChartsPopover.open(d);
         })
         .attr('style', 'cursor: pointer;')
         .attr('class', 'data-points')

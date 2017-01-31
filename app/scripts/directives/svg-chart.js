@@ -17,7 +17,7 @@
 
 angular.module('svgChartsApp')
   .directive('svgChart', function ($window, $mdMedia, SvgChartsScene, SvgChartsAxis, SvgChartsCandlestickChart,
-                                   SvgChartsLineChart, SvgChartsOHLCChart, SvgChartsExtras,
+                                   SvgChartsLineChart, SvgChartsOHLCChart, SvgChartsExtras, SvgChartsPopover,
                                    SvgChartsSubPlot, SvgChartsVolumeChart, SvgChartsKagiChart) {
     return {
       scope: {
@@ -48,6 +48,8 @@ angular.module('svgChartsApp')
         SvgChartsSubPlot.init();
         // Axis elements
         SvgChartsAxis.init();
+        // Pop over windows
+        SvgChartsPopover.init();
 
 
         /**
@@ -212,6 +214,7 @@ angular.module('svgChartsApp')
             SvgChartsOHLCChart.cleanUp();
             SvgChartsLineChart.render();
           }
+
           // SELECTED EXTRAS
           // TODO: Remove the manual initiation of features
           // Render the data points
@@ -242,6 +245,11 @@ angular.module('svgChartsApp')
           else {
             SvgChartsSubPlot.cleanUp();
           }
+
+          // Remove any previous popovers
+          SvgChartsPopover.cleanUpPopovers();
+
+
           // Set the previous selected chart
           $scope.previousSelectedChart = $scope.selectedChart;
           // Set the previous selected extras
