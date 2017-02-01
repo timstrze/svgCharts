@@ -1081,7 +1081,11 @@ angular.module('svgChartsApp')
 
     SvgChartsPopover.cleanUpPopovers = function(override) {
 
-      if(!override && SvgChartsScene.$previousChartData && (angular.equals(SvgChartsScene.$previousChartData[0], SvgChartsScene.chartData[0]))) {
+      if(!override &&
+        SvgChartsScene.chartData &&
+        SvgChartsScene.$previousChartData &&
+        (SvgChartsScene.$previousChartData.length === SvgChartsScene.chartData.length) &&
+        (angular.equals(SvgChartsScene.$previousChartData[0], SvgChartsScene.chartData[0]))) {
         return false;
       }
 
