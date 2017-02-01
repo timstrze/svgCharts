@@ -52,7 +52,7 @@ angular.module('svgChartsApp')
           .attr('class', 'popover-text')
           .attr('name', 'popover-text')
           .text( function () {
-            return  _d.date.getMonth() + '/' + _d.date.getDay() + '/' + _d.date.getFullYear() +
+            return  (_d.date.getMonth() + 1) + '/' + _d.date.getDate() + '/' + _d.date.getFullYear() +
               ' O: ' + parseFloat(Math.round(_d.open * 100) / 100).toFixed(2) +
               ' H: ' + parseFloat(Math.round(_d.high * 100) / 100).toFixed(2) +
               ' L: ' + parseFloat(Math.round(_d.low * 100) / 100).toFixed(2) +
