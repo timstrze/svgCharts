@@ -81,15 +81,14 @@ angular.module('svgChartsApp')
           })
           .attr('style', 'fill-opacity:0.3; cursor: pointer;')
           .on('click', function() {
-            SvgChartsPopover.cleanUpPopovers();
+            SvgChartsPopover.cleanUpPopovers(true);
           });
     };
 
 
-    SvgChartsPopover.cleanUpPopovers = function() {
+    SvgChartsPopover.cleanUpPopovers = function(override) {
 
-      if(SvgChartsScene.$previousChartData && (angular.equals(SvgChartsScene.$previousChartData[0], SvgChartsScene.chartData[0]))) {
-        SvgChartsScene.$previousChartData = SvgChartsScene.chartData;
+      if(!override && SvgChartsScene.$previousChartData && (angular.equals(SvgChartsScene.$previousChartData[0], SvgChartsScene.chartData[0]))) {
         return false;
       }
 
