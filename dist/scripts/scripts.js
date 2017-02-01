@@ -251,9 +251,6 @@ angular.module('svgChartsApp')
           }
           else {
             SvgChartsExtras.cleanUpDataPoints();
-
-            // Remove any previous popovers
-            SvgChartsPopover.cleanUpPopovers();
           }
           // Render the moving average
           if ($scope.selectedExtras && $scope.selectedExtras.toString().indexOf('moving-average') > -1) {
@@ -277,7 +274,8 @@ angular.module('svgChartsApp')
             SvgChartsSubPlot.cleanUp();
           }
 
-
+          // Remove any previous popovers
+          SvgChartsPopover.cleanUpPopovers();
 
           // Set the previous selected chart
           $scope.previousSelectedChart = $scope.selectedChart;
@@ -1082,11 +1080,19 @@ angular.module('svgChartsApp')
 
 
     SvgChartsPopover.cleanUpPopovers = function() {
+
+      if(SvgChartsScene.$previousChartData && (angular.equals(SvgChartsScene.$previousChartData[0], SvgChartsScene.chartData[0]))) {
+        return false;
+      }
+
       SvgChartsScene.popoverTextBox.attr('x', -500);
       SvgChartsScene.popoverTextBoxClose.attr('x', -500);
 
       SvgChartsScene.popoverText.text('');
       SvgChartsScene.popoverTextBoxCloseText.text('');
+
+      SvgChartsScene.$previousChartData = SvgChartsScene.chartData;
+
     };
 
 
