@@ -1046,10 +1046,10 @@ angular.module('svgChartsApp')
           .attr('name', 'popover-text')
           .text( function () {
             return  ('0' + (_d.date.getMonth() + 1)).slice(-2) + '/' + ('0' + (_d.date.getDate())).slice(-2) + '/' + _d.date.getFullYear() +
-              ' O: ' + parseFloat(Math.round(_d.open * 100) / 100).toFixed(3) +
-              ' H: ' + parseFloat(Math.round(_d.high * 100) / 100).toFixed(3) +
-              ' L: ' + parseFloat(Math.round(_d.low * 100) / 100).toFixed(3) +
-              ' C: ' + parseFloat(Math.round(_d.close * 100) / 100).toFixed(3); })
+              ' O: ' + parseFloat(Math.round(_d.open * 1000) / 1000).toFixed(3) +
+              ' H: ' + parseFloat(Math.round(_d.high * 1000) / 1000).toFixed(3) +
+              ' L: ' + parseFloat(Math.round(_d.low * 1000) / 1000).toFixed(3) +
+              ' C: ' + parseFloat(Math.round(_d.close * 1000) / 1000).toFixed(3); })
           .attr('font-family', 'sans-serif')
           .attr('font-size', '20px')
           .attr('fill', 'white')
