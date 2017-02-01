@@ -1045,15 +1045,15 @@ angular.module('svgChartsApp')
           .attr('class', 'popover-text')
           .attr('name', 'popover-text')
           .text( function () {
-            return  (_d.date.getMonth() + 1) + '/' + _d.date.getDate() + '/' + _d.date.getFullYear() +
-              ' O: ' + parseFloat(Math.round(_d.open * 100) / 100).toFixed(2) +
-              ' H: ' + parseFloat(Math.round(_d.high * 100) / 100).toFixed(2) +
-              ' L: ' + parseFloat(Math.round(_d.low * 100) / 100).toFixed(2) +
-              ' C: ' + parseFloat(Math.round(_d.close * 100) / 100).toFixed(2); })
+            return  ('0' + (_d.date.getMonth() + 1)).slice(-2) + '/' + ('0' + (_d.date.getDate())).slice(-2) + '/' + _d.date.getFullYear() +
+              ' O: ' + parseFloat(Math.round(_d.open * 100) / 100).toFixed(3) +
+              ' H: ' + parseFloat(Math.round(_d.high * 100) / 100).toFixed(3) +
+              ' L: ' + parseFloat(Math.round(_d.low * 100) / 100).toFixed(3) +
+              ' C: ' + parseFloat(Math.round(_d.close * 100) / 100).toFixed(3); })
           .attr('font-family', 'sans-serif')
           .attr('font-size', '20px')
           .attr('fill', 'white')
-          .call(wrap, 90, popoverTextBoxX + 4);
+          .call(wrap, 105, popoverTextBoxX + 4);
 
         SvgChartsScene.popoverTextBoxCloseText
           .attr('x', popoverTextBoxX + popoverTextBoxWidth - 20 + 5)
